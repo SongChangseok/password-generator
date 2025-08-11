@@ -175,6 +175,10 @@ export class PasswordGenerator {
    * Uses crypto.getRandomValues() for secure random number generation
    */
   private static getSecureRandomChar(characterPool: string): string {
+    if (characterPool.length === 0) {
+      throw new Error('Character pool is empty');
+    }
+
     if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
       const randomArray = new Uint32Array(1);
       crypto.getRandomValues(randomArray);

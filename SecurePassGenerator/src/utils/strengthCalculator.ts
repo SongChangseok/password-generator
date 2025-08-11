@@ -1,6 +1,42 @@
 import { StrengthResult } from '../types/password';
 
 export class PasswordStrengthCalculator {
+  // Score calculation constants
+  private static readonly SCORE_THRESHOLDS = {
+    ENTROPY_MULTIPLIER: 1.5,
+    MAX_ENTROPY_SCORE: 60,
+    LENGTH_BONUS: {
+      LONG: 15,  // 12+ characters
+      MEDIUM: 10, // 8+ characters
+      SHORT: 5    // 6+ characters
+    },
+    CHARACTER_TYPE_MULTIPLIER: 5,
+    UNIQUENESS_MULTIPLIER: 5,
+    PENALTIES: {
+      REPEATED_CHARS: 10,
+      SEQUENTIAL_CHARS: 15,
+      COMMON_PATTERNS: 20,
+      COMMON_WORDS: 25,
+      SHORT_PASSWORD: 20,  // < 8 chars
+      VERY_SHORT: 30,      // < 6 chars
+      EXTREMELY_SHORT: 40  // < 4 chars
+    }
+  };
+
+  private static readonly LENGTH_REQUIREMENTS = {
+    MINIMUM: 4,
+    RECOMMENDED: 8,
+    OPTIMAL: 12
+  };
+
+  private static readonly STRENGTH_THRESHOLDS = {
+    STRONG: 80,
+    GOOD: 60,
+    FAIR: 40
+  };
+
+  private static readonly UNIQUENESS_THRESHOLD = 0.7;
+
   private static readonly COMMON_PATTERNS = [
     /(.)\1{2,}/g, // repeated characters
     /123|234|345|456|567|678|789|890/g, // sequential numbers
@@ -47,14 +83,23 @@ export class PasswordStrengthCalculator {
     };
   }
 
+  // Pre-compiled regex patterns for better performance
+  private static readonly CHARACTER_REGEX = {
+    LOWERCASE: /[a-z]/,
+    UPPERCASE: /[A-Z]/,
+    NUMBERS: /[0-9]/,
+    SPECIAL_CHARS: /[^a-zA-Z0-9]/,
+    REPEATED_CHARS: /(.)\1{2,}/
+  };
+
   /**
    * Analyzes password composition and characteristics
    */
   private static analyzePassword(password: string) {
-    const hasLowercase = /[a-z]/.test(password);
-    const hasUppercase = /[A-Z]/.test(password);
-    const hasNumbers = /[0-9]/.test(password);
-    const hasSpecialChars = /[^a-zA-Z0-9]/.test(password);
+    const hasLowercase = this.CHARACTER_REGEX.LOWERCASE.test(password);
+    const hasUppercase = this.CHARACTER_REGEX.UPPERCASE.test(password);
+    const hasNumbers = this.CHARACTER_REGEX.NUMBERS.test(password);
+    const hasSpecialChars = this.CHARACTER_REGEX.SPECIAL_CHARS.test(password);
 
     const characterTypes = [hasLowercase, hasUppercase, hasNumbers, hasSpecialChars]
       .filter(Boolean).length;
@@ -102,30 +147,43 @@ export class PasswordStrengthCalculator {
     let score = 0;
 
     // Base score from entropy (0-60 points)
-    score += Math.min(60, entropy * 1.5);
+    score += Math.min(
+      this.SCORE_THRESHOLDS.MAX_ENTROPY_SCORE, 
+      entropy * this.SCORE_THRESHOLDS.ENTROPY_MULTIPLIER
+    );
 
     // Length bonus (0-15 points)
-    if (analysis.length >= 12) score += 15;
-    else if (analysis.length >= 8) score += 10;
-    else if (analysis.length >= 6) score += 5;
+    if (analysis.length >= this.LENGTH_REQUIREMENTS.OPTIMAL) {
+      score += this.SCORE_THRESHOLDS.LENGTH_BONUS.LONG;
+    } else if (analysis.length >= this.LENGTH_REQUIREMENTS.RECOMMENDED) {
+      score += this.SCORE_THRESHOLDS.LENGTH_BONUS.MEDIUM;
+    } else if (analysis.length >= 6) {
+      score += this.SCORE_THRESHOLDS.LENGTH_BONUS.SHORT;
+    }
 
     // Character type diversity (0-20 points)
-    score += analysis.characterTypes * 5;
+    score += analysis.characterTypes * this.SCORE_THRESHOLDS.CHARACTER_TYPE_MULTIPLIER;
 
     // Unique characters bonus (0-5 points)
-    const uniquenessRatio = analysis.uniqueCharacters / analysis.length;
-    score += uniquenessRatio * 5;
+    const uniquenessRatio = analysis.length > 0 ? analysis.uniqueCharacters / analysis.length : 0;
+    score += uniquenessRatio * this.SCORE_THRESHOLDS.UNIQUENESS_MULTIPLIER;
 
     // Penalties
-    if (analysis.hasRepeatedChars) score -= 10;
-    if (analysis.hasSequentialChars) score -= 15;
-    if (analysis.hasCommonPatterns) score -= 20;
-    if (analysis.hasCommonWords) score -= 25;
+    if (analysis.hasRepeatedChars) score -= this.SCORE_THRESHOLDS.PENALTIES.REPEATED_CHARS;
+    if (analysis.hasSequentialChars) score -= this.SCORE_THRESHOLDS.PENALTIES.SEQUENTIAL_CHARS;
+    if (analysis.hasCommonPatterns) score -= this.SCORE_THRESHOLDS.PENALTIES.COMMON_PATTERNS;
+    if (analysis.hasCommonWords) score -= this.SCORE_THRESHOLDS.PENALTIES.COMMON_WORDS;
 
     // Length penalties
-    if (analysis.length < 8) score -= 20;
-    if (analysis.length < 6) score -= 30;
-    if (analysis.length < 4) score -= 40;
+    if (analysis.length < this.LENGTH_REQUIREMENTS.RECOMMENDED) {
+      score -= this.SCORE_THRESHOLDS.PENALTIES.SHORT_PASSWORD;
+    }
+    if (analysis.length < 6) {
+      score -= this.SCORE_THRESHOLDS.PENALTIES.VERY_SHORT;
+    }
+    if (analysis.length < this.LENGTH_REQUIREMENTS.MINIMUM) {
+      score -= this.SCORE_THRESHOLDS.PENALTIES.EXTREMELY_SHORT;
+    }
 
     return score;
   }
@@ -134,9 +192,9 @@ export class PasswordStrengthCalculator {
    * Determines strength level based on score
    */
   private static getStrengthLevel(score: number): StrengthResult['level'] {
-    if (score >= 80) return 'strong';
-    if (score >= 60) return 'good';
-    if (score >= 40) return 'fair';
+    if (score >= this.STRENGTH_THRESHOLDS.STRONG) return 'strong';
+    if (score >= this.STRENGTH_THRESHOLDS.GOOD) return 'good';
+    if (score >= this.STRENGTH_THRESHOLDS.FAIR) return 'fair';
     return 'weak';
   }
 
@@ -176,17 +234,17 @@ export class PasswordStrengthCalculator {
   ): string[] {
     const feedback: string[] = [];
 
-    if (score >= 80) {
+    if (score >= this.STRENGTH_THRESHOLDS.STRONG) {
       feedback.push('Excellent! This is a strong password.');
       return feedback;
     }
 
-    if (analysis.length < 8) {
-      feedback.push('Use at least 8 characters for better security.');
+    if (analysis.length < this.LENGTH_REQUIREMENTS.RECOMMENDED) {
+      feedback.push(`Use at least ${this.LENGTH_REQUIREMENTS.RECOMMENDED} characters for better security.`);
     }
 
-    if (analysis.length < 12) {
-      feedback.push('Consider using 12 or more characters for optimal security.');
+    if (analysis.length < this.LENGTH_REQUIREMENTS.OPTIMAL) {
+      feedback.push(`Consider using ${this.LENGTH_REQUIREMENTS.OPTIMAL} or more characters for optimal security.`);
     }
 
     if (analysis.characterTypes < 3) {
@@ -217,8 +275,8 @@ export class PasswordStrengthCalculator {
       feedback.push('Avoid common words that can be found in dictionaries.');
     }
 
-    const uniquenessRatio = analysis.uniqueCharacters / analysis.length;
-    if (uniquenessRatio < 0.7) {
+    const uniquenessRatio = analysis.length > 0 ? analysis.uniqueCharacters / analysis.length : 0;
+    if (uniquenessRatio < this.UNIQUENESS_THRESHOLD) {
       feedback.push('Use more unique characters to increase complexity.');
     }
 
@@ -233,7 +291,7 @@ export class PasswordStrengthCalculator {
    * Checks for repeated characters
    */
   private static hasRepeatedCharacters(password: string): boolean {
-    return /(.)\1{2,}/.test(password);
+    return this.CHARACTER_REGEX.REPEATED_CHARS.test(password);
   }
 
   /**
