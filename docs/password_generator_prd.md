@@ -170,18 +170,7 @@
 
 ```json
 {
-  "dependencies": {
-    "react-native": "^0.72.0",
-    "@react-native-clipboard/clipboard": "^1.11.2",
-    "@react-native-async-storage/async-storage": "^1.19.3",
-    "react-native-crypto-js": "^1.0.0",
-    "react-native-vector-icons": "^10.0.0",
-    "react-native-haptic-feedback": "^2.2.0",
-    "react-native-google-mobile-ads": "^12.0.0",
-    "react-native-share": "^9.4.1",
-    "react-native-biometrics": "^3.0.1",
-    "@react-native-keychain/react-native-keychain": "^8.1.0"
-  }
+  "dependencies": {}
 }
 ```
 
