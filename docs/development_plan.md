@@ -1,422 +1,587 @@
-# SecurePass Generator 개발 상세 계획
+# SecurePass Generator 개발 계획서
 
 ## 프로젝트 개요
 
-**앱명:** SecurePass Generator  
-**플랫폼:** iOS (14.0+), Android (8.0+)  
-**프레임워크:** React Native 0.72+  
-**개발 기간:** 약 12주 (3개월)
+### 기본 정보
+- **프로젝트명**: SecurePass Generator
+- **개발 기간**: 22주 (약 5.5개월)
+- **기술 스택**: React Native (Expo SDK 49+), TypeScript
+- **대상 플랫폼**: iOS 14.0+, Android 8.0+
+- **개발 방식**: Expo Managed Workflow + EAS Build
 
-## 기술 스택 및 의존성
+### 개발 목표
+안전하고 직관적인 패스워드 생성 모바일 앱 개발로, 기본 오프라인 작동과 강력한 보안 기능을 제공하는 사용자 친화적 유틸리티 앱 구현
 
-### 핵심 기술 스택
-```json
-{
-  "framework": "React Native 0.72+",
-  "language": "TypeScript",
-  "development": "Expo CLI",
-  "state-management": "React Context API + useState",
-  "storage": "@react-native-async-storage/async-storage",
-  "encryption": "react-native-crypto-js",
-  "testing": "Jest + React Native Testing Library"
-}
-```
+## 개발 단계별 상세 계획
 
-### 필수 라이브러리
-```json
-{
-  "dependencies": {
-    "react-native": "^0.72.0",
-    "@react-native-clipboard/clipboard": "^1.11.2",
-    "@react-native-async-storage/async-storage": "^1.19.3",
-    "react-native-crypto-js": "^1.0.0",
-    "react-native-vector-icons": "^10.0.0",
-    "react-native-haptic-feedback": "^2.2.0",
-    "react-native-google-mobile-ads": "^12.0.0",
-    "react-native-share": "^9.4.1",
-    "react-native-biometrics": "^3.0.1",
-    "@react-native-keychain/react-native-keychain": "^8.1.0"
-  }
-}
-```
+### Phase 1: MVP 개발 (6주) - v1.0
 
-## 프로젝트 구조
+#### Week 1: 프로젝트 기반 설정
+**목표**: Expo 프로젝트 초기화 및 개발 환경 구성
 
-```
-src/
-├── components/           # 재사용 가능한 컴포넌트
-│   ├── common/          
-│   │   ├── Button/      # 커스텀 버튼 컴포넌트
-│   │   ├── Input/       # 입력 필드
-│   │   ├── Slider/      # 길이 조절 슬라이더
-│   │   └── Toggle/      # 옵션 토글 스위치
-│   ├── password/
-│   │   ├── PasswordCard/     # 생성된 패스워드 표시 카드
-│   │   ├── PasswordList/     # 저장된 패스워드 목록
-│   │   ├── StrengthMeter/    # 패스워드 강도 표시
-│   │   └── SaveDialog/       # 패스워드 저장 다이얼로그
-│   └── security/
-│       ├── BiometricAuth/    # 생체 인증
-│       ├── PinInput/         # PIN 입력
-│       └── LockScreen/       # 잠금 화면
-├── screens/             # 화면 컴포넌트
-│   ├── Generator/       # 메인 패스워드 생성 화면
-│   ├── SavedPasswords/  # 저장된 패스워드 목록
-│   ├── PasswordDetail/  # 패스워드 상세 정보
-│   ├── Settings/        # 앱 설정
-│   └── Security/        # 보안 설정
-├── utils/               # 유틸리티 함수
-│   ├── passwordGenerator.ts    # 패스워드 생성 로직
-│   ├── strengthCalculator.ts   # 강도 계산
-│   ├── cryptoUtils.ts         # 암호화 유틸
-│   └── validation.ts          # 입력 검증
-├── hooks/               # 커스텀 훅
-│   ├── usePasswordGenerator.ts
-│   ├── useSecureStorage.ts
-│   ├── useBiometric.ts
-│   └── useAppState.ts
-├── services/            # 서비스 레이어
-│   ├── StorageService.ts      # 로컬 저장소 관리
-│   ├── SecurityService.ts     # 보안 기능
-│   └── AdService.ts          # 광고 관리
-├── constants/           # 상수 정의
-│   ├── colors.ts        # 컬러 팔레트
-│   ├── typography.ts    # 폰트 설정
-│   └── config.ts        # 앱 설정
-├── types/               # TypeScript 타입 정의
-│   ├── password.ts      # 패스워드 관련 타입
-│   ├── security.ts      # 보안 관련 타입
-│   └── storage.ts       # 저장소 타입
-└── __tests__/           # 테스트 파일
-    ├── components/
-    ├── utils/
-    └── services/
-```
+**주요 작업**:
+- Expo CLI 설치 및 프로젝트 생성 (`expo init SecurePassGenerator`)
+- 필수 의존성 설치 (Navigation, SecureStore, Crypto 등)
+- TypeScript 설정 및 ESLint/Prettier 구성
+- 폴더 구조 설정 (`src/components`, `src/screens`, `src/utils` 등)
+- 기본 네비게이션 구조 구현 (Bottom Tabs)
+- Git 저장소 초기화 및 기본 README 작성
 
-## 단계별 개발 계획
+**완료 기준**:
+- Expo 프로젝트가 iOS/Android 시뮬레이터에서 정상 실행
+- TypeScript 컴파일 에러 없음
+- 기본 화면 간 네비게이션 작동
 
-### 1단계: 프로젝트 기반 설정 (1주)
-**목표:** 개발 환경 구축 및 기본 구조 생성
+**예상 시간**: 40시간
 
-#### 세부 작업
-- [ ] React Native 프로젝트 초기화 (Expo CLI)
-- [ ] TypeScript 환경 설정
-- [ ] 필수 라이브러리 설치 및 설정
-- [ ] 폴더 구조 생성
-- [ ] ESLint, Prettier 설정
-- [ ] Git 저장소 설정 및 커밋 컨벤션 정의
-- [ ] 기본 네비게이션 구조 (Stack Navigation)
+#### Week 2: 패스워드 생성 엔진 개발
+**목표**: 핵심 패스워드 생성 로직 구현
 
-#### 기술 설정
-```bash
-# 프로젝트 초기화
-npx create-expo-app SecurePassGenerator --template
+**주요 작업**:
+- `expo-crypto`를 활용한 안전한 난수 생성기 구현
+- 패스워드 생성 알고리즘 개발 (길이, 문자 타입 옵션)
+- 패스워드 강도 계산 로직 구현
+- 유닛 테스트 작성 (`passwordGenerator.test.ts`, `strengthCalculator.test.ts`)
+- 성능 최적화 (300ms 이내 생성 목표)
 
-# 필수 라이브러리 설치
-expo install @react-native-async-storage/async-storage
-expo install @react-native-clipboard/clipboard
-npm install react-native-crypto-js
-expo install react-native-vector-icons
-```
+**완료 기준**:
+- 8-32자 패스워드 생성 기능 완성
+- 모든 문자 타입 조합 지원 (대문자, 소문자, 숫자, 특수문자)
+- 패스워드 강도 표시 (약함/보통/강함)
+- 유닛 테스트 통과율 90% 이상
 
-### 2단계: 패스워드 생성 엔진 개발 (2주)
-**목표:** 핵심 패스워드 생성 로직 구현
+**예상 시간**: 40시간
 
-#### 세부 작업
-- [ ] 암호학적으로 안전한 난수 생성기 구현
-- [ ] 문자 집합 정의 (대문자, 소문자, 숫자, 특수문자)
-- [ ] 패스워드 생성 알고리즘 구현
-- [ ] 패스워드 강도 계산 함수
-- [ ] 고급 옵션 구현
-  - [ ] 유사 문자 제외 (0/O, 1/l/I)
-  - [ ] 연속 문자 방지
-  - [ ] 읽기 쉬운 형식 (4자리씩 구분)
+#### Week 3: 메인 UI 구현 (1/2)
+**목표**: 패스워드 생성 화면 기본 UI 구현
 
-#### 핵심 구현: passwordGenerator.ts
-```typescript
-interface GeneratorOptions {
-  length: number;
-  includeUppercase: boolean;
-  includeLowercase: boolean;
-  includeNumbers: boolean;
-  includeSymbols: boolean;
-  excludeSimilar: boolean;
-  preventRepeating: boolean;
-}
+**주요 작업**:
+- GeneratorScreen 컴포넌트 구현
+- 길이 설정 슬라이더 UI
+- 문자 타입 체크박스 UI
+- 생성 버튼 및 재생성 버튼
+- 패스워드 표시 영역 (모노스페이스 폰트)
+- 기본 스타일링 (컬러 팔레트 적용)
 
-export class PasswordGenerator {
-  private static getCharacterSet(options: GeneratorOptions): string {
-    // 문자 집합 생성 로직
-  }
+**완료 기준**:
+- 모든 생성 옵션이 UI에서 설정 가능
+- 반응형 레이아웃 (다양한 화면 크기 대응)
+- 라이트/다크 모드 기본 지원
 
-  public static generate(options: GeneratorOptions): string {
-    // 안전한 패스워드 생성 로직
-  }
-}
-```
+**예상 시간**: 40시간
 
-#### 패스워드 강도 계산
-```typescript
-export interface StrengthResult {
-  score: number; // 0-4
-  label: string; // "매우 약함", "약함", "보통", "강함", "매우 강함"
-  color: string;
-}
+#### Week 4: 메인 UI 구현 (2/2) 및 클립보드 기능
+**목표**: UI 완성 및 핵심 기능 연동
 
-export function calculatePasswordStrength(password: string): StrengthResult {
-  // NIST 가이드라인 기반 강도 계산
-}
-```
+**주요 작업**:
+- 패스워드 강도 표시 바 UI
+- `expo-clipboard`를 이용한 복사 기능 구현
+- 복사 완료 토스트 메시지
+- 생성/복사 사용자 피드백 (햅틱, 애니메이션)
+- 전체 UI/UX 테스트 및 개선
 
-### 3단계: 메인 UI 구현 (2주)
-**목표:** 패스워드 생성기 메인 화면 완성
+**완료 기준**:
+- 원터치 패스워드 복사 기능 완성
+- 사용자 피드백 시스템 완성
+- iOS/Android 플랫폼별 네이티브 디자인 가이드 준수
 
-#### 세부 작업
-- [ ] 메인 화면 레이아웃 구현
-- [ ] 길이 조절 슬라이더 컴포넌트
-- [ ] 문자 유형 토글 스위치들
-- [ ] 패스워드 표시 카드
-- [ ] 복사 기능 (햅틱 피드백 포함)
-- [ ] 재생성 버튼
-- [ ] 강도 표시기 (시각적 바 + 텍스트)
-- [ ] 다크/라이트 테마 지원
+**예상 시간**: 40시간
 
-#### UI 컴포넌트 명세
+#### Week 5: 통합 테스트 및 버그 수정
+**목표**: MVP 안정성 확보
 
-**PasswordCard 컴포넌트**
-```typescript
-interface PasswordCardProps {
-  password: string;
-  strength: StrengthResult;
-  onCopy: () => void;
-  onShare: () => void;
-}
-```
+**주요 작업**:
+- 전체 기능 통합 테스트
+- 메모리 누수 확인 및 성능 최적화
+- 크래시 발생 시나리오 테스트
+- 사용성 테스트 (UX 관점)
+- 코드 리팩토링 및 최적화
 
-**GeneratorOptions 컴포넌트**
-```typescript
-interface GeneratorOptionsProps {
-  length: number;
-  options: GeneratorOptions;
-  onLengthChange: (length: number) => void;
-  onOptionsChange: (options: GeneratorOptions) => void;
-}
-```
+**완료 기준**:
+- 크래시 없는 안정적 작동
+- 메모리 사용량 80MB 이하
+- 패스워드 생성 시간 300ms 이내 유지
 
-### 4단계: 보안 기능 구현 (2주)
-**목표:** 생체 인증, 암호화, 앱 잠금 기능
+**예상 시간**: 40시간
 
-#### 세부 작업
-- [ ] 생체 인증 설정 (지문, 얼굴 인식)
-- [ ] PIN 코드 설정 및 인증
-- [ ] AES-256 암호화 저장소 구현
-- [ ] 백그라운드 보호 (화면 블러)
-- [ ] 자동 잠금 타이머
-- [ ] 잠금 화면 UI
+#### Week 6: MVP 완성 및 베타 버전 배포
+**목표**: MVP 1.0 버전 완성
 
-#### 보안 서비스 구현
-```typescript
-export class SecurityService {
-  // 생체 인증 확인
-  static async authenticateWithBiometric(): Promise<boolean> {
-    // react-native-biometrics 사용
-  }
+**주요 작업**:
+- 최종 코드 정리 및 문서화
+- EAS Build를 통한 베타 버전 빌드
+- 내부 테스트 배포 (TestFlight/Google Play Internal Testing)
+- 초기 사용자 피드백 수집 준비
+- 버전 1.0 태깅 및 릴리스
 
-  // PIN 인증
-  static async authenticateWithPIN(pin: string): Promise<boolean> {
-    // 키체인에 저장된 PIN과 비교
-  }
+**완료 기준**:
+- 스토어에 업로드 가능한 빌드 완성
+- 기본 보안 검증 완료
+- 내부 베타 테스트 가능
 
-  // 데이터 암호화
-  static async encryptData(data: string): Promise<string> {
-    // AES-256 암호화
-  }
-
-  // 데이터 복호화
-  static async decryptData(encryptedData: string): Promise<string> {
-    // AES-256 복호화
-  }
-}
-```
-
-### 5단계: 패스워드 관리 시스템 (2주)
-**목표:** 패스워드 저장, 목록, 검색 기능
-
-#### 세부 작업
-- [ ] 패스워드 저장 다이얼로그
-- [ ] 저장된 패스워드 목록 화면
-- [ ] 검색 및 필터링 기능
-- [ ] 패스워드 상세 보기
-- [ ] 편집 기능 (사이트명, 메모만)
-- [ ] 삭제 기능 (스와이프, 개별, 전체)
-- [ ] 정렬 옵션 (최신순, 이름순)
-
-#### 저장 데이터 구조
-```typescript
-interface SavedPassword {
-  id: string;
-  password: string;
-  siteName: string;
-  accountName?: string;
-  memo?: string;
-  strength: StrengthResult;
-  createdAt: Date;
-  lastUsed?: Date;
-}
-```
-
-### 6단계: 공유 기능 구현 (1주)
-**목표:** 안전한 패스워드 공유 기능
-
-#### 세부 작업
-- [ ] 공유 버튼 및 확인 다이얼로그
-- [ ] 시스템 공유 시트 연동
-- [ ] 보안 경고 메시지 표시
-- [ ] 공유 이벤트 로깅 (선택사항)
-
-### 7단계: 광고 및 수익화 (1주)
-**목표:** AdMob 통합 및 광고 제거 옵션
-
-#### 세부 작업
-- [ ] AdMob SDK 설정
-- [ ] 배너 광고 구현 (메인 화면 하단)
-- [ ] 전면 광고 (앱 실행 시)
-- [ ] 네이티브 광고 (패스워드 목록)
-- [ ] 광고 제거 인앱 구매 ($1.99)
-- [ ] 광고 표시 로직 (적절한 빈도)
-
-### 8단계: 테스트 및 최적화 (1주)
-**목표:** 품질 보증 및 성능 최적화
-
-#### 세부 작업
-- [ ] 단위 테스트 작성 (utils, services)
-- [ ] 컴포넌트 테스트 작성
-- [ ] E2E 테스트 (주요 플로우)
-- [ ] 성능 최적화
-  - [ ] React.memo() 적용
-  - [ ] useMemo() 최적화
-  - [ ] 메모리 누수 검사
-- [ ] 보안 테스트
-- [ ] 사용성 테스트
-
-## 보안 요구사항 구현
-
-### 암호화 전략
-- **저장 데이터**: AES-256-GCM 방식으로 암호화
-- **키 관리**: 각 기기별 고유 키를 키체인에 저장
-- **랜덤 생성**: `crypto.getRandomValues()` 사용
-
-### 생체 인증 플로우
-1. 앱 설치 시 생체 인증 설정 옵션 제공
-2. 생체 인증 실패 시 PIN 코드로 대체
-3. 3회 실패 시 앱 초기화 옵션
-
-### 메모리 보안
-- 패스워드는 최소한의 시간만 메모리에 유지
-- 화면 전환 시 민감한 데이터 클리어
-- 백그라운드 전환 시 화면 내용 숨김
-
-## 성능 최적화 전략
-
-### 목표 성능 지표
-- **앱 실행 시간**: 2초 이내
-- **패스워드 생성**: 1초 이내  
-- **메모리 사용량**: 50MB 이하
-- **앱 크기**: 20MB 이하
-
-### 최적화 방법
-- **코드 분할**: 화면별 지연 로딩
-- **이미지 최적화**: WebP 형식 사용
-- **번들 분석**: Metro bundler 최적화
-- **메모리 관리**: 불필요한 상태 정리
-
-## 테스트 전략
-
-### 테스트 피라미드
-- **단위 테스트 (70%)**: utils, services 함수 테스트
-- **통합 테스트 (20%)**: 컴포넌트 상호작용 테스트  
-- **E2E 테스트 (10%)**: 주요 사용자 플로우
-
-### 핵심 테스트 케이스
-```typescript
-// 패스워드 생성 테스트
-describe('PasswordGenerator', () => {
-  test('지정된 길이의 패스워드 생성', () => {
-    const password = PasswordGenerator.generate({
-      length: 12,
-      includeUppercase: true,
-      includeLowercase: true,
-      includeNumbers: true,
-      includeSymbols: false
-    });
-    expect(password).toHaveLength(12);
-  });
-});
-
-// 보안 테스트
-describe('SecurityService', () => {
-  test('데이터 암호화/복호화', async () => {
-    const original = 'test-password';
-    const encrypted = await SecurityService.encryptData(original);
-    const decrypted = await SecurityService.decryptData(encrypted);
-    expect(decrypted).toBe(original);
-  });
-});
-```
-
-## 배포 계획
-
-### 스토어 배포 준비
-- **앱 아이콘**: 1024x1024 고해상도 아이콘
-- **스크린샷**: iOS/Android 각 화면별
-- **앱 설명**: SEO 최적화된 설명문
-- **개인정보 정책**: 필수 정책 문서
-
-### 점진적 배포
-1. **알파 테스트**: 내부 테스터 5명
-2. **베타 테스트**: TestFlight/Play Console 베타 50명
-3. **소프트 런칭**: 일부 지역 출시
-4. **글로벌 출시**: 전 지역 배포
-
-## 마일스톤 및 일정
-
-| 주차 | 단계 | 주요 산출물 | 완료 기준 |
-|------|------|-------------|-----------|
-| 1주 | 프로젝트 설정 | 기본 앱 구조 | 앱 실행 가능 |
-| 2-3주 | 패스워드 생성 | 생성 엔진 | 기본 패스워드 생성 |
-| 4-5주 | 메인 UI | 생성 화면 | 사용자 인터페이스 완성 |
-| 6-7주 | 보안 기능 | 인증 시스템 | 생체/PIN 인증 |
-| 8-9주 | 관리 시스템 | 저장/목록 | 패스워드 저장 관리 |
-| 10주 | 공유 기능 | 공유 시스템 | 안전한 공유 |
-| 11주 | 광고 수익화 | AdMob 통합 | 광고 표시 |
-| 12주 | 테스트/배포 | 배포 준비 | 스토어 제출 |
-
-## 위험 요소 및 대응책
-
-### 기술적 위험
-- **성능 이슈**: 프로파일링 도구로 조기 발견
-- **보안 취약점**: 보안 감사 실시
-- **플랫폼 호환성**: 다양한 기기에서 테스트
-
-### 비즈니스 위험  
-- **스토어 정책 변경**: 정책 모니터링 및 신속 대응
-- **광고 수익 변동**: 다양한 수익화 모델 검토
-- **경쟁 앱 출시**: 차별화 포인트 강화
-
-## 성공 지표 (KPI)
-
-### 기술적 지표
-- 앱 크래시율: 0.1% 미만
-- 평균 실행 시간: 2초 이내
-- 메모리 사용량: 50MB 이하
-
-### 비즈니스 지표
-- 첫 주 다운로드: 1,000회
-- 월간 활성 사용자: 5,000명
-- 광고 수익: 월 $500
+**예상 시간**: 40시간
 
 ---
 
-**문서 버전**: 1.0  
-**작성일**: 2025-08-11  
-**다음 업데이트**: 개발 진행에 따라 주간 업데이트
+### Phase 2: 보안 강화 (5주) - v1.1
+
+#### Week 7: 생체 인증 시스템 구현
+**목표**: expo-local-authentication 기반 보안 인증 구현
+
+**주요 작업**:
+- `expo-local-authentication` 설정 및 권한 처리
+- 지문/Face ID 인증 로직 구현
+- 플랫폼별 생체 인증 가용성 확인
+- 인증 실패 처리 로직
+- 설정 화면에서 생체 인증 ON/OFF 기능
+
+**완료 기준**:
+- iOS Face ID/Touch ID 정상 작동
+- Android 지문 인증 정상 작동
+- 생체 인증 불가능한 기기에서 적절한 대체 방안 제공
+
+**예상 시간**: 40시간
+
+#### Week 8: PIN 코드 인증 및 앱 잠금
+**목표**: 추가 인증 수단 및 앱 보안 강화
+
+**주요 작업**:
+- PIN 코드 설정/변경/삭제 UI 구현
+- `expo-secure-store`를 이용한 PIN 암호화 저장
+- PIN 코드 입력 UI (보안 키패드)
+- 앱 잠금 활성화/비활성화 설정
+- 잠금 해제 플로우 구현
+
+**완료 기준**:
+- 4-6자리 PIN 코드 설정 가능
+- PIN 코드 해시 암호화 저장
+- 생체 인증 실패 시 PIN 코드 대체 인증
+
+**예상 시간**: 40시간
+
+#### Week 9: 백그라운드 보호 및 자동 잠금
+**목표**: 앱 보안 강화 기능 완성
+
+**주요 작업**:
+- AppState 변경 감지로 백그라운드 진입 시 화면 블러 처리
+- 자동 잠금 타이머 구현 (30초/1분/5분/즉시)
+- 앱 재진입 시 인증 요구 로직
+- 보안 설정 화면 완성
+- 보안 관련 사용자 안내 메시지
+
+**완료 기준**:
+- 백그라운드에서 앱 내용 완전히 숨김
+- 설정된 시간 후 자동 잠금 작동
+- 잠금 해제 없이는 앱 사용 불가
+
+**예상 시간**: 40시간
+
+#### Week 10: 보안 기능 통합 테스트
+**목표**: 모든 보안 기능의 안정성 확보
+
+**주요 작업**:
+- 생체 인증 + PIN 코드 조합 테스트
+- 다양한 디바이스에서 호환성 테스트
+- 보안 설정 변경 시나리오 테스트
+- 메모리에서 민감 데이터 즉시 삭제 확인
+- 보안 취약점 기초 점검
+
+**완료 기준**:
+- 모든 보안 기능이 예외 없이 작동
+- 메모리 덤프에서 패스워드 데이터 검출되지 않음
+- 사용자 경험 저해 없는 보안 구현
+
+**예상 시간**: 40시간
+
+#### Week 11: v1.1 릴리스 준비
+**목표**: 보안 강화 버전 배포 준비
+
+**주요 작업**:
+- 코드 보안 검토 (ESLint Security Plugin)
+- 의존성 보안 검사 (npm audit)
+- 사용자 가이드 업데이트
+- 베타 테스터 피드백 반영
+- v1.1 빌드 및 스토어 업데이트 준비
+
+**완료 기준**:
+- 보안 검사 통과
+- 베타 테스터 만족도 80% 이상
+- 스토어 업데이트 승인 준비 완료
+
+**예상 시간**: 40시간
+
+---
+
+### Phase 3: 편의 기능 강화 (4주) - v1.2
+
+#### Week 12: 패스워드 저장 시스템 구현
+**목표**: 로컬 패스워드 관리 기능 개발
+
+**주요 작업**:
+- `expo-secure-store` 기반 AES-256 암호화 저장소 구현
+- 패스워드 저장 데이터 모델 설계 (ID, 사이트명, 패스워드, 날짜, 메모)
+- 저장 다이얼로그 UI 구현
+- 저장된 패스워드 목록 데이터 관리
+- 저장 용량 제한 (무료 버전 10개)
+
+**완료 기준**:
+- 패스워드 암호화 저장/불러오기 정상 작동
+- 최대 저장 개수 제한 기능 완성
+- 데이터 무결성 확인
+
+**예상 시간**: 40시간
+
+#### Week 13: 패스워드 목록 화면 구현
+**목표**: 저장된 패스워드 관리 UI 완성
+
+**주요 작업**:
+- PasswordListScreen 컴포넌트 구현
+- 패스워드 카드 UI 컴포넌트 (`PasswordCard`)
+- 목록 표시 (사이트명, 생성날짜, 강도, 메모 미리보기)
+- 상세 보기 화면 구현
+- 편집/삭제 기능 구현
+
+**완료 기준**:
+- 저장된 패스워드 목록 표시
+- 카드 클릭 시 상세 정보 표시
+- 편집/삭제 기능 정상 작동
+
+**예상 시간**: 40시간
+
+#### Week 14: 검색 및 정렬 기능
+**목표**: 패스워드 관리 편의성 향상
+
+**주요 작업**:
+- 검색 바 컴포넌트 구현
+- 사이트명/메모 기반 실시간 검색
+- 정렬 옵션 구현 (최신순/이름순/강도순)
+- 필터 기능 (강도별, 날짜별)
+- 검색 결과 하이라이트
+
+**완료 기준**:
+- 빠른 검색 기능 (타이핑과 동시에 결과 표시)
+- 다양한 정렬 옵션 정상 작동
+- 검색어 하이라이트 표시
+
+**예상 시간**: 40시간
+
+#### Week 15: 고급 생성 옵션 및 기능 완성
+**목표**: 프리미엄 기능 및 사용성 개선
+
+**주요 작업**:
+- 유사 문자 제외 옵션 (0/O, 1/l/I 등)
+- 연속 문자 방지 기능
+- 읽기 쉬운 형식 표시 (4자리 구분)
+- 프리셋 템플릿 구현 (웹사이트용/고보안용/PIN용)
+- 공유 기능 (`expo-sharing`) 및 보안 경고
+
+**완료 기준**:
+- 모든 고급 옵션이 패스워드 생성에 반영
+- 프리셋 템플릿 정상 작동
+- 공유 기능 및 보안 경고 완성
+
+**예상 시간**: 40시간
+
+---
+
+### Phase 4: 보안 감사 및 법적 준수 (4주)
+
+#### Week 16: 코드 보안 감사
+**목표**: 전면적인 보안 취약점 검토
+
+**주요 작업**:
+- 정적 분석 도구 실행 (ESLint Security, Semgrep)
+- 의존성 취약점 스캔 (npm audit, Snyk)
+- 코드 리뷰 (보안 전문가 외부 컨설팅)
+- 하드코딩된 비밀 정보 점검
+- 입력 검증 및 예외 처리 강화
+
+**완료 기준**:
+- 모든 High/Critical 취약점 해결
+- 외부 보안 전문가 승인
+- 보안 감사 보고서 작성
+
+**예상 시간**: 40시간
+
+#### Week 17: 침투 테스트
+**목표**: 실제 공격 시나리오 기반 보안 테스트
+
+**주요 작업**:
+- 앱 레벨 테스트 (리버스 엔지니어링, 데이터 추출 시도)
+- 네트워크 레벨 테스트 (중간자 공격, 통신 감청)
+- 디바이스 레벨 테스트 (로컬 데이터 보호, 앱 샌드박스)
+- 루팅/탈옥 기기에서 보안성 확인
+- 취약점 발견 시 즉시 패치
+
+**완료 기준**:
+- 침투 테스트 통과
+- 로컬 데이터 암호화 확인
+- 메모리 덤프 공격 방어 확인
+
+**예상 시간**: 40시간
+
+#### Week 18: OWASP MASVS 준수 검증
+**목표**: 모바일 앱 보안 표준 준수 확인
+
+**주요 작업**:
+- OWASP MASVS 체크리스트 기반 검증
+- 암호화 구현 NIST 표준 준수 확인
+- 생체 인증 보안 구현 검토
+- 키 관리 및 저장 방식 검증
+- 보안 표준 준수 문서화
+
+**완료 기준**:
+- OWASP MASVS Level 2 준수
+- 보안 인증서 또는 검증 문서 확보
+- 보안 가이드라인 문서 완성
+
+**예상 시간**: 40시간
+
+#### Week 19: 법적 준수 및 개인정보보호 정책
+**목표**: GDPR 및 개인정보보호법 준수
+
+**주요 작업**:
+- 개인정보처리방침 작성
+- GDPR 준수 사항 점검 (데이터 최소화, 사용자 권리 보장)
+- 데이터 내보내기 기능 구현
+- 완전 삭제 기능 구현
+- 법무팀 검토 (외부 컨설팅)
+
+**완료 기준**:
+- 개인정보처리방침 완성
+- GDPR 준수 확인서 확보
+- 사용자 데이터 관리 기능 완성
+
+**예상 시간**: 40시간
+
+---
+
+### Phase 5: 수익화 및 출시 (3주) - v1.3
+
+#### Week 20: 광고 SDK 연동 (기술적 도전)
+**목표**: 수익화 시스템 구현
+
+**주요 작업**:
+- EAS Build 환경에서 `react-native-google-mobile-ads` 설정
+- 배너 광고 구현 (메인 화면 하단)
+- 전면 광고 구현 (앱 시작 시, 주기적 표시)
+- 광고 표시 로직 최적화 (사용자 경험 보호)
+- 광고 수익 측정 도구 연동
+
+**완료 기준**:
+- 테스트 광고 정상 표시
+- 광고가 앱 기능에 영향 없음
+- 광고 수익 트래킹 가능
+
+**예상 시간**: 40시간
+
+#### Week 21: 인앱 구매 및 프리미엄 기능
+**목표**: 프리미엄 수익 모델 구현
+
+**주요 작업**:
+- 광고 제거 인앱 구매 구현 ($1.99)
+- 무료/프리미엄 기능 차등화 로직
+- 구매 상태 검증 및 복원 기능
+- 설정 화면에 구매 옵션 추가
+- 영수증 검증 시스템
+
+**완료 기준**:
+- 인앱 구매 정상 작동
+- 구매 후 광고 완전 제거
+- 구매 복원 기능 완성
+
+**예상 시간**: 40시간
+
+#### Week 22: 최종 빌드 및 스토어 출시
+**목표**: 프로덕션 출시 완료
+
+**주요 작업**:
+- 프로덕션 빌드 최적화 (Bundle size 25MB 이하)
+- App Store/Google Play 스토어 등록 정보 작성
+- 스크린샷 및 앱 설명 제작
+- 키워드 SEO 최적화
+- 최종 테스트 및 QA
+- 스토어 심사 제출
+
+**완료 기준**:
+- 스토어 심사 통과
+- 정식 출시 완료
+- 사용자 피드백 수집 시스템 준비
+
+**예상 시간**: 40시간
+
+---
+
+## 기술적 고려사항
+
+### 핵심 기술 구현
+
+#### 1. 보안 암호화
+```typescript
+// expo-crypto를 활용한 안전한 패스워드 생성
+import * as Crypto from 'expo-crypto';
+
+const generateSecurePassword = async (length: number, options: PasswordOptions) => {
+  const randomBytes = await Crypto.getRandomBytesAsync(length * 2);
+  // 암호학적으로 안전한 난수 기반 패스워드 생성 로직
+};
+```
+
+#### 2. 로컬 암호화 저장
+```typescript
+// expo-secure-store를 활용한 AES-256 암호화
+import * as SecureStore from 'expo-secure-store';
+
+const savePassword = async (passwordData: PasswordData) => {
+  const encrypted = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    JSON.stringify(passwordData)
+  );
+  await SecureStore.setItemAsync('passwords', encrypted);
+};
+```
+
+#### 3. 생체 인증
+```typescript
+// expo-local-authentication 구현
+import * as LocalAuthentication from 'expo-local-authentication';
+
+const authenticateUser = async () => {
+  const hasHardware = await LocalAuthentication.hasHardwareAsync();
+  const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+  
+  if (hasHardware && isEnrolled) {
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: '앱 접근을 위해 인증해주세요',
+      fallbackLabel: 'PIN 코드 사용',
+    });
+    return result.success;
+  }
+  return false;
+};
+```
+
+### 성능 최적화 전략
+
+1. **메모리 관리**
+   - React.memo()로 불필요한 리렌더링 방지
+   - useMemo()로 복잡한 계산 최적화
+   - useCallback()으로 함수 참조 최적화
+
+2. **번들 최적화**
+   - EAS Build의 압축 옵션 활용
+   - 불필요한 라이브러리 제거
+   - 이미지 최적화 및 WebP 포맷 사용
+
+3. **앱 시작 시간 단축**
+   - expo-splash-screen으로 로딩 최적화
+   - 필수 컴포넌트 우선 로드
+   - 지연 로딩 (Lazy Loading) 적용
+
+### 품질 보증 프로세스
+
+#### 테스트 전략
+1. **유닛 테스트** (70%)
+   - 패스워드 생성 로직
+   - 암호화/복호화 기능
+   - 사용자 입력 검증
+
+2. **통합 테스트** (20%)
+   - 화면 간 데이터 전달
+   - 저장소 연동
+   - 인증 플로우
+
+3. **E2E 테스트** (10%)
+   - 전체 사용자 시나리오
+   - 크리티컬 패스 테스트
+
+#### 지속적 통합/배포 (CI/CD)
+- GitHub Actions를 통한 자동 테스트
+- EAS Build로 자동 빌드
+- 코드 품질 게이트 (ESLint, TypeScript)
+- 자동 보안 스캔 (Snyk, npm audit)
+
+## 리스크 관리
+
+### 기술적 리스크
+
+1. **Expo Managed Workflow 제약사항**
+   - **리스크**: 네이티브 모듈 제한
+   - **대응**: EAS Build + expo-dev-client 활용
+
+2. **광고 SDK 연동 복잡성**
+   - **리스크**: 수익화 지연 가능성
+   - **대응**: Phase 5로 분리, 기본 기능 우선 완성
+
+3. **크로스 플랫폼 호환성**
+   - **리스크**: iOS/Android 동작 차이
+   - **대응**: 플랫폼별 테스트 강화
+
+### 비즈니스 리스크
+
+1. **보안 취약점 발견**
+   - **리스크**: 출시 지연, 신뢰도 하락
+   - **대응**: Phase 4에서 충분한 보안 감사
+
+2. **사용자 피드백 반영**
+   - **리스크**: UX 개선 요구사항 증가
+   - **대응**: 베타 테스트를 통한 사전 검증
+
+3. **스토어 심사 거부**
+   - **리스크**: 출시 일정 지연
+   - **대응**: 스토어 가이드라인 사전 검토
+
+## 성공 지표 (KPI)
+
+### 기술적 성능
+- 앱 실행 시간: 2.5초 이내
+- 패스워드 생성 시간: 300ms 이내
+- 메모리 사용량: 80MB 이하
+- 앱 크기: 25MB 이하
+- 크래시율: 1% 미만
+
+### 사용자 만족도
+- 앱스토어 평점: 4.0 이상
+- 베타 테스터 만족도: 80% 이상
+- 일일 활성 사용자 (DAU): 출시 후 3개월 내 500명
+- 사용자 리텐션: 7일 후 30% 이상
+
+### 보안 목표
+- 보안 취약점: High/Critical 0건
+- 침투 테스트 통과율: 100%
+- OWASP MASVS Level 2 준수
+- 외부 보안 감사 통과
+
+## 출시 후 유지보수 계획
+
+### 단기 계획 (출시 후 1-3개월)
+- 사용자 피드백 모니터링 및 긴급 버그 수정
+- 성능 최적화 및 안정성 개선
+- 추가 언어 지원 (일본어, 중국어)
+
+### 중기 계획 (3-12개월)
+- 고급 기능 추가 (패스워드 만료 알림, 보안 점수)
+- 웹 버전 개발 고려
+- 기업용 기능 개발 (팀 공유, 관리자 기능)
+
+### 장기 계획 (1년 이후)
+- AI 기반 보안 위협 감지
+- 블록체인 기반 분산 저장
+- IoT 기기 연동 (스마트 홈 보안)
+
+---
+
+## 결론
+
+본 개발 계획서는 22주에 걸쳐 안전하고 사용자 친화적인 패스워드 생성 앱을 체계적으로 개발하기 위한 로드맵을 제시합니다. 
+
+**핵심 성공 요소**:
+1. **보안 우선**: 사용자 데이터 보호를 최우선으로 하는 설계
+2. **단계별 개발**: 기능별로 검증하며 안정적으로 구축
+3. **사용자 중심**: 복잡한 보안 기능을 직관적으로 제공
+4. **지속적 개선**: 출시 후에도 지속적인 보안 업데이트 및 기능 개선
+
+이 계획을 통해 개인 사용자와 IT 전문가 모두가 만족할 수 있는 프리미엄 패스워드 생성 솔루션을 성공적으로 출시할 수 있을 것입니다.
+
+---
+*마지막 업데이트: 2024년 12월*
