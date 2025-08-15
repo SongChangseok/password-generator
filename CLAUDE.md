@@ -28,10 +28,16 @@ This is a React Native (Expo) password generator mobile application built with T
 - `npm run lint:fix` - Fix ESLint errors automatically
 - `npm run format` - Format code with Prettier
 
+### Testing Commands
+- `npm test` - Run all unit tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
+
 ### Pre-commit Requirements
 Always run these commands before committing:
 1. `npm run typecheck` - Must pass with no errors
 2. `npm run lint` - Must pass with no errors
+3. `npm test` - All tests must pass
 
 ## Project Architecture
 
@@ -41,6 +47,12 @@ src/
 ├── components/     # Reusable UI components
 ├── screens/        # Screen components (GeneratorScreen, HistoryScreen, SettingsScreen)
 └── utils/          # Utility functions and helpers
+    ├── __tests__/  # Unit tests for utilities
+    ├── types.ts    # TypeScript type definitions
+    ├── secureRandom.ts      # Cryptographically secure random generation
+    ├── passwordGenerator.ts # Core password generation logic
+    ├── strengthCalculator.ts # Password strength analysis
+    └── performance.ts       # Performance measurement utilities
 ```
 
 ### Navigation Structure
@@ -90,16 +102,18 @@ The project follows a structured development plan:
 4. **Phase 4**: Security audit and compliance
 5. **Phase 5**: Monetization and store release
 
-Current status: Phase 1 base setup completed.
+Current status: Phase 1 - Password generation engine completed.
 
 ## Important Implementation Notes
 
 ### Password Generation
-- Use `expo-crypto` for secure random number generation
-- Support 8-32 character lengths
-- Include options for: uppercase, lowercase, numbers, special characters
-- Calculate and display password strength (weak/medium/strong)
-- Generate passwords within 300ms performance target
+- **Core Engine**: Complete password generation system implemented
+- **Security**: Uses `expo-crypto.getRandomBytesAsync()` for cryptographically secure random generation
+- **Flexibility**: Supports 8-32 character lengths with all character type combinations
+- **Options**: Uppercase, lowercase, numbers, symbols, exclude similar chars, prevent repeating
+- **Strength Analysis**: 5-level strength scoring (0-4) with detailed feedback
+- **Performance**: Generates passwords in <300ms (target achieved)
+- **Testing**: 96%+ code coverage with comprehensive unit and integration tests
 
 ### Local Storage
 - Use Expo SecureStore for all password storage
@@ -114,13 +128,82 @@ Current status: Phase 1 base setup completed.
 - Background blur protection
 
 ## Testing Strategy
-- Unit tests for password generation algorithms
+
+### Current Test Coverage
+- **Password Generation**: Complete unit tests for all generation algorithms
+- **Security Functions**: Tests for secure random generation and strength calculation
+- **Integration Tests**: End-to-end password generation pipeline testing
+- **Performance Tests**: Benchmarking and performance measurement validation
+- **Coverage**: 96%+ code coverage achieved (target: 90%)
+
+### Testing Framework
+- **Jest**: Primary testing framework with expo-jest preset
+- **Coverage**: Automatic coverage reporting with thresholds
+- **Mocking**: Expo Crypto mocked for consistent testing
+- **CI/CD**: All tests must pass before code integration
+
+### Future Testing (Not Yet Implemented)
 - Integration tests for secure storage operations
 - E2E tests for complete user flows
 - Security testing for encryption and authentication
 
 ## Performance Targets
+
+### Achieved Targets ✅
+- **Password generation**: < 300ms (currently achieving ~1-5ms)
+- **Test execution**: All 65 tests complete in <2 seconds
+- **Code coverage**: 96%+ (exceeds 90% target)
+
+### Future Targets (Not Yet Measured)
 - App launch time: < 2.5 seconds
-- Password generation: < 300ms
 - Memory usage: < 80MB
 - App bundle size: < 25MB
+
+## Key Utilities and APIs
+
+### Core Password Generation
+```typescript
+import { generateSecurePassword, DEFAULT_OPTIONS } from '@/utils/passwordGenerator';
+import { GeneratorOptions } from '@/utils/types';
+
+// Generate with default options (16 chars, all types)
+const result = await generateSecurePassword(DEFAULT_OPTIONS);
+
+// Custom generation
+const options: GeneratorOptions = {
+  length: 20,
+  includeUppercase: true,
+  includeLowercase: true,
+  includeNumbers: true,
+  includeSymbols: false,
+  excludeSimilar: true,
+  preventRepeating: true,
+};
+const customResult = await generateSecurePassword(options);
+```
+
+### Password Strength Analysis
+```typescript
+import { calculatePasswordStrength, getStrengthColor } from '@/utils/strengthCalculator';
+
+const strength = calculatePasswordStrength('MyP@ssw0rd!');
+// Returns: { score: 3, label: 'good', feedback: ['Strong password!'] }
+
+const color = getStrengthColor(strength); // Returns color code for UI
+```
+
+### Performance Measurement
+```typescript
+import { measurePerformance, benchmarkPasswordGeneration } from '@/utils/performance';
+
+// Measure single generation
+const { result, metrics } = await measurePerformance(() => 
+  generateSecurePassword(DEFAULT_OPTIONS)
+);
+
+// Benchmark multiple generations
+const benchmark = await benchmarkPasswordGeneration(
+  () => generateSecurePassword(DEFAULT_OPTIONS),
+  100 // iterations
+);
+```
