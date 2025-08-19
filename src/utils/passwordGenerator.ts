@@ -158,6 +158,8 @@ const hasRepeatingChars = (password: string): boolean => {
 export const generateSecurePassword = async (
   options: GeneratorOptions
 ): Promise<GeneratedPassword> => {
+  const startTime = Date.now();
+
   // Validate options
   if (options.length < 8 || options.length > 32) {
     throw new Error('Password length must be between 8 and 32 characters');
@@ -210,12 +212,18 @@ export const generateSecurePassword = async (
   // Calculate strength and entropy
   const strength = calculatePasswordStrength(password);
   const entropy = Math.log2(charset.length) * options.length;
+  const endTime = Date.now();
+  const generationTime = endTime - startTime;
 
   return {
     password,
     strength,
     entropy,
     generatedAt: new Date(),
+    metadata: {
+      generationTime,
+      entropy,
+    },
   };
 };
 

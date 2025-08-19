@@ -19,7 +19,7 @@ export default function GeneratorScreen() {
     useState<GeneratedPassword | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleGeneratePassword = async () => {
+  const handleGeneratePassword = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -48,7 +48,7 @@ export default function GeneratorScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [options]);
 
   const handleLengthChange = (length: number) => {
     setOptions((prev) => ({ ...prev, length }));
@@ -69,7 +69,7 @@ export default function GeneratorScreen() {
       if (!generatedPassword) {
         handleGeneratePassword();
       }
-    }, [generatedPassword])
+    }, [generatedPassword, handleGeneratePassword])
   );
 
   return (

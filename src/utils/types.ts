@@ -19,4 +19,8 @@ export interface GeneratedPassword {
   strength: PasswordStrength;
   entropy: number;
   generatedAt: Date;
+  metadata?: {
+    generationTime: number;
+    entropy: number;
+  };
 }

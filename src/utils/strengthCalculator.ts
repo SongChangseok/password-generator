@@ -139,6 +139,16 @@ const hasRepetition = (password: string): boolean => {
 export const calculatePasswordStrength = (
   password: string
 ): PasswordStrength => {
+  // Input validation
+  if (!password || typeof password !== 'string') {
+    return {
+      score: 0,
+      label: 'very-weak',
+      feedback: ['Invalid password input'],
+      entropy: 0,
+    };
+  }
+
   const feedback: string[] = [];
   let score = 0;
 

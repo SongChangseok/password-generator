@@ -72,8 +72,8 @@ describe('Password Generation Integration', () => {
         false
       );
 
-      // Verify similar characters are excluded
-      expect(/[Il10O|]/.test(result.password)).toBe(false);
+      // Verify similar characters are excluded (I, L, l, 0, 1, |)
+      expect(/[ILl01|]/.test(result.password)).toBe(false);
 
       // Verify strength is calculated
       expect(result.strength.score).toBeGreaterThanOrEqual(2);
