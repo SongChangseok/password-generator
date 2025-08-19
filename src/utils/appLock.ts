@@ -13,6 +13,25 @@ export interface AppLockSettings {
   backgroundProtection: boolean;
 }
 
+export enum AutoLockTimeout {
+  IMMEDIATE = 0,
+  THIRTY_SECONDS = 30,
+  ONE_MINUTE = 60,
+  FIVE_MINUTES = 300,
+}
+
+export const AUTO_LOCK_OPTIONS = [
+  { label: 'Immediate', value: AutoLockTimeout.IMMEDIATE },
+  { label: '30 seconds', value: AutoLockTimeout.THIRTY_SECONDS },
+  { label: '1 minute', value: AutoLockTimeout.ONE_MINUTE },
+  { label: '5 minutes', value: AutoLockTimeout.FIVE_MINUTES },
+];
+
+export const getAutoLockLabel = (timeout: number): string => {
+  const option = AUTO_LOCK_OPTIONS.find((opt) => opt.value === timeout);
+  return option ? option.label : `${timeout} seconds`;
+};
+
 export interface AppLockState {
   isLocked: boolean;
   lastActiveTime: number;
@@ -25,7 +44,7 @@ const APP_LOCK_STATE_KEY = 'app_lock_state';
 // Default settings
 const DEFAULT_SETTINGS: AppLockSettings = {
   isEnabled: false,
-  lockTimeout: 300, // 5 minutes
+  lockTimeout: AutoLockTimeout.FIVE_MINUTES,
   requireAuthOnStart: true,
   backgroundProtection: true,
 };

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Alert,
   SafeAreaView,
+  Modal,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Colors } from '@/utils/colors';
@@ -29,8 +30,12 @@ import { useAppLock } from '@/contexts/AppLockContext';
 import {
   enableAppLock,
   disableAppLock,
+  setAppLockSettings,
+  getAutoLockLabel,
+  AUTO_LOCK_OPTIONS,
   type AppLockSettings,
 } from '@/utils/appLock';
+import { SecurityGuide } from '@/components/SecurityGuide';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -44,6 +49,7 @@ export default function SettingsScreen() {
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [pinSettings, setPinSettings] = useState<PinSettings | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showSecurityGuide, setShowSecurityGuide] = useState(false);
 
   const loadSettings = useCallback(async () => {
     try {
@@ -184,6 +190,57 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleAutoLockTimeoutPress = () => {
+    if (!appLockSettings?.isEnabled) return;
+
+    const options = AUTO_LOCK_OPTIONS.map((option) => ({
+      text: option.label,
+      onPress: () => handleAutoLockTimeoutChange(option.value),
+    }));
+    options.push({
+      text: 'Cancel',
+      onPress: () => Promise.resolve(),
+    } as any);
+
+    Alert.alert(
+      'Auto-Lock Timeout',
+      'Choose when to automatically lock the app:',
+      options
+    );
+  };
+
+  const handleAutoLockTimeoutChange = async (timeout: number) => {
+    if (!appLockSettings) return;
+
+    try {
+      const newSettings = {
+        ...appLockSettings,
+        lockTimeout: timeout,
+      };
+      await setAppLockSettings(newSettings);
+      await refreshSettings();
+    } catch (error) {
+      console.error('Error updating auto-lock timeout:', error);
+      Alert.alert('Error', 'Failed to update auto-lock timeout');
+    }
+  };
+
+  const handleBackgroundProtectionToggle = async (enabled: boolean) => {
+    if (!appLockSettings) return;
+
+    try {
+      const newSettings = {
+        ...appLockSettings,
+        backgroundProtection: enabled,
+      };
+      await setAppLockSettings(newSettings);
+      await refreshSettings();
+    } catch (error) {
+      console.error('Error updating background protection:', error);
+      Alert.alert('Error', 'Failed to update background protection setting');
+    }
+  };
+
   const renderSecuritySection = () => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Security</Text>
@@ -265,6 +322,58 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       )}
 
+      {/* Auto-Lock Timeout */}
+      {appLockSettings?.isEnabled && (
+        <TouchableOpacity
+          style={styles.settingItem}
+          onPress={handleAutoLockTimeoutPress}
+        >
+          <View style={styles.settingContent}>
+            <Text style={styles.settingTitle}>Auto-Lock Timeout</Text>
+            <Text style={styles.settingDescription}>
+              Lock app after {getAutoLockLabel(appLockSettings.lockTimeout)} of
+              inactivity
+            </Text>
+          </View>
+          <Text style={styles.settingValue}>
+            {getAutoLockLabel(appLockSettings.lockTimeout)}
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Background Protection */}
+      {appLockSettings?.isEnabled && (
+        <View style={styles.settingItem}>
+          <View style={styles.settingContent}>
+            <Text style={styles.settingTitle}>Background Protection</Text>
+            <Text style={styles.settingDescription}>
+              Hide app content when switching to other apps
+            </Text>
+          </View>
+          <Switch
+            value={appLockSettings?.backgroundProtection || false}
+            onValueChange={handleBackgroundProtectionToggle}
+            trackColor={{ false: Colors.gray300, true: Colors.primary }}
+            thumbColor={
+              appLockSettings?.backgroundProtection
+                ? Colors.white
+                : Colors.gray100
+            }
+          />
+        </View>
+      )}
+
+      {/* Security Guide */}
+      <TouchableOpacity
+        style={styles.guideButton}
+        onPress={() => setShowSecurityGuide(true)}
+      >
+        <Text style={styles.guideButtonText}>Security Guide</Text>
+        <Text style={styles.guideButtonSubtext}>
+          Learn security best practices
+        </Text>
+      </TouchableOpacity>
+
       {/* Security Level Indicator */}
       <View style={styles.securityLevel}>
         <Text style={styles.securityLevelTitle}>Security Level</Text>
@@ -296,6 +405,15 @@ export default function SettingsScreen() {
         <Text style={styles.title}>Settings</Text>
         {renderSecuritySection()}
       </ScrollView>
+
+      {/* Security Guide Modal */}
+      <Modal
+        visible={showSecurityGuide}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <SecurityGuide onClose={() => setShowSecurityGuide(false)} />
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -399,5 +517,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.gray700,
     lineHeight: 20,
+  },
+  settingValue: {
+    fontSize: 14,
+    color: Colors.primary,
+    fontWeight: '600',
+  },
+  guideButton: {
+    backgroundColor: Colors.primary + '10',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.primary + '20',
+  },
+  guideButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.primary,
+    marginBottom: 4,
+  },
+  guideButtonSubtext: {
+    fontSize: 14,
+    color: Colors.gray600,
   },
 });

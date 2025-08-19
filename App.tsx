@@ -10,6 +10,7 @@ import SettingsScreen from './src/screens/SettingsScreen';
 import PinSetupScreen from './src/screens/PinSetupScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import { AppLockProvider, useAppLock } from './src/contexts/AppLockContext';
+import { BackgroundProtection } from './src/components/BackgroundProtection';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -37,7 +38,7 @@ function TabNavigator() {
 }
 
 function AppNavigator() {
-  const { isLocked, isLoading, authenticate } = useAppLock();
+  const { isLocked, isLoading, authenticate, settings } = useAppLock();
 
   if (isLoading) {
     return null; // Could add a loading screen here
@@ -48,22 +49,24 @@ function AppNavigator() {
   }
 
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Main"
-        component={TabNavigator}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="PinSetup"
-        component={PinSetupScreen}
-        options={{
-          title: 'PIN Setup',
-          presentation: 'modal',
-          headerShown: false,
-        }}
-      />
-    </Stack.Navigator>
+    <BackgroundProtection enabled={settings?.backgroundProtection || false}>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Main"
+          component={TabNavigator}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PinSetup"
+          component={PinSetupScreen}
+          options={{
+            title: 'PIN Setup',
+            presentation: 'modal',
+            headerShown: false,
+          }}
+        />
+      </Stack.Navigator>
+    </BackgroundProtection>
   );
 }
 
