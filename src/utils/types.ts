@@ -12,6 +12,7 @@ export interface PasswordStrength {
   score: number; // 0-4 (0: very weak, 1: weak, 2: fair, 3: good, 4: strong)
   label: 'very-weak' | 'weak' | 'fair' | 'good' | 'strong';
   feedback: string[];
+  entropy?: number; // Optional entropy calculation
 }
 
 export interface GeneratedPassword {
