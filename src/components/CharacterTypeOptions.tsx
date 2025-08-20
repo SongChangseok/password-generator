@@ -62,10 +62,16 @@ export const CharacterTypeOptions: React.FC<CharacterTypeOptionsProps> = ({
   style,
 }) => {
   const toggleOption = (key: keyof GeneratorOptions) => {
-    onOptionsChange({
-      ...options,
-      [key]: !options[key],
-    });
+    // Type-safe property access to prevent object injection
+    const currentValue = options[key];
+    if (typeof currentValue === 'boolean') {
+      onOptionsChange({
+        ...options,
+        [key]: !currentValue,
+      });
+    } else {
+      console.warn(`Attempted to toggle non-boolean property: ${String(key)}`);
+    }
   };
 
   const renderOptionItem = (item: OptionItem) => {

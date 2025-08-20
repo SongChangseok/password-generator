@@ -42,7 +42,7 @@ export default function EditPasswordScreen() {
 
   useEffect(() => {
     if (password) {
-      const changes = 
+      const changes =
         siteName !== password.siteName ||
         accountName !== (password.accountName || '') ||
         memo !== (password.memo || '');
@@ -54,10 +54,10 @@ export default function EditPasswordScreen() {
     try {
       setLoading(true);
       const passwordData = await passwordStorage.getById(passwordId);
-      
+
       if (!passwordData) {
         Alert.alert('Error', 'Password not found', [
-          { text: 'OK', onPress: () => navigation.goBack() }
+          { text: 'OK', onPress: () => navigation.goBack() },
         ]);
         return;
       }
@@ -97,7 +97,7 @@ export default function EditPasswordScreen() {
       });
 
       Alert.alert('Success', 'Password details updated successfully', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+        { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
       console.error('Error updating password:', error);
@@ -144,22 +144,28 @@ export default function EditPasswordScreen() {
 
   const getStrengthColor = (score: number): string => {
     switch (score) {
-      case 0: return Colors.danger;
-      case 1: return Colors.warning;
-      case 2: return '#FFA500';
-      case 3: return Colors.success;
-      case 4: return Colors.success;
-      default: return Colors.gray;
+      case 0:
+        return Colors.danger;
+      case 1:
+        return Colors.warning;
+      case 2:
+        return '#FFA500';
+      case 3:
+        return Colors.success;
+      case 4:
+        return Colors.success;
+      default:
+        return Colors.gray;
     }
   };
 
   const getStrengthLabel = (label: string): string => {
     const labels: Record<string, string> = {
       'very-weak': 'Very Weak',
-      'weak': 'Weak',
-      'fair': 'Fair',
-      'good': 'Good',
-      'strong': 'Strong',
+      weak: 'Weak',
+      fair: 'Fair',
+      good: 'Good',
+      strong: 'Strong',
     };
     return labels[label] || label;
   };
@@ -192,19 +198,24 @@ export default function EditPasswordScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={handleCancel}
-          >
+          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Edit Password</Text>
           <TouchableOpacity
-            style={[styles.saveButton, (!hasChanges || saving) && styles.saveButtonDisabled]}
+            style={[
+              styles.saveButton,
+              (!hasChanges || saving) && styles.saveButtonDisabled,
+            ]}
             onPress={handleSave}
             disabled={!hasChanges || saving}
           >
-            <Text style={[styles.saveButtonText, (!hasChanges || saving) && styles.saveButtonTextDisabled]}>
+            <Text
+              style={[
+                styles.saveButtonText,
+                (!hasChanges || saving) && styles.saveButtonTextDisabled,
+              ]}
+            >
               {saving ? 'Saving...' : 'Save'}
             </Text>
           </TouchableOpacity>
@@ -217,22 +228,27 @@ export default function EditPasswordScreen() {
             <Text style={styles.sectionSubtitle}>
               This information cannot be edited for security reasons
             </Text>
-            
+
             <View style={styles.readOnlyCard}>
               <View style={styles.passwordRow}>
                 <Text style={styles.passwordLabel}>Password</Text>
                 <Text style={styles.passwordValue}>
-                  {'•'.repeat(password.password.length)} ({password.password.length} chars)
+                  {'•'.repeat(password.password.length)} (
+                  {password.password.length} chars)
                 </Text>
               </View>
-              
+
               <View style={styles.strengthRow}>
                 <Text style={styles.strengthLabel}>Strength</Text>
                 <View style={styles.strengthContainer}>
                   <View
                     style={[
                       styles.strengthDot,
-                      { backgroundColor: getStrengthColor(password.strength.score) }
+                      {
+                        backgroundColor: getStrengthColor(
+                          password.strength.score
+                        ),
+                      },
                     ]}
                   />
                   <Text style={styles.strengthText}>
@@ -253,7 +269,7 @@ export default function EditPasswordScreen() {
           {/* Editable Information */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Editable Information</Text>
-            
+
             {/* Site Name */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>
@@ -308,7 +324,11 @@ export default function EditPasswordScreen() {
                 style={styles.resetButton}
                 onPress={resetChanges}
               >
-                <Ionicons name="refresh-outline" size={20} color={Colors.gray600} />
+                <Ionicons
+                  name="refresh-outline"
+                  size={20}
+                  color={Colors.gray600}
+                />
                 <Text style={styles.resetButtonText}>Reset Changes</Text>
               </TouchableOpacity>
             </View>

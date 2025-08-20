@@ -2,7 +2,7 @@ import { GeneratorOptions, PasswordTemplate, TemplateConfig } from './types';
 
 /**
  * Password Generation Templates - v1.2
- * 
+ *
  * Provides preset configurations for common use cases
  */
 
@@ -97,7 +97,9 @@ export const PASSWORD_TEMPLATES: TemplateConfig[] = [
  * @param template Template type
  * @returns Template configuration
  */
-export const getTemplateConfig = (template: PasswordTemplate): TemplateConfig | null => {
+export const getTemplateConfig = (
+  template: PasswordTemplate
+): TemplateConfig | null => {
   switch (template) {
     case PasswordTemplate.WEBSITE:
       return WEBSITE_TEMPLATE;
@@ -122,7 +124,7 @@ export const applyTemplate = (template: PasswordTemplate): GeneratorOptions => {
   if (!config) {
     throw new Error(`Template ${template} not found`);
   }
-  
+
   return { ...config.options };
 };
 
@@ -132,9 +134,11 @@ export const applyTemplate = (template: PasswordTemplate): GeneratorOptions => {
  * @returns Template configuration or null
  */
 export const getTemplateByName = (name: string): TemplateConfig | null => {
-  return PASSWORD_TEMPLATES.find(template => 
-    template.name.toLowerCase() === name.toLowerCase()
-  ) || null;
+  return (
+    PASSWORD_TEMPLATES.find(
+      (template) => template.name.toLowerCase() === name.toLowerCase()
+    ) || null
+  );
 };
 
 /**
@@ -142,12 +146,14 @@ export const getTemplateByName = (name: string): TemplateConfig | null => {
  * @param options Current generator options
  * @returns Matching template or null
  */
-export const detectCurrentTemplate = (options: GeneratorOptions): TemplateConfig | null => {
+export const detectCurrentTemplate = (
+  options: GeneratorOptions
+): TemplateConfig | null => {
   for (const template of PASSWORD_TEMPLATES) {
     const templateOptions = template.options;
-    
+
     // Check if all options match
-    const matches = 
+    const matches =
       templateOptions.length === options.length &&
       templateOptions.includeUppercase === options.includeUppercase &&
       templateOptions.includeLowercase === options.includeLowercase &&
@@ -156,12 +162,12 @@ export const detectCurrentTemplate = (options: GeneratorOptions): TemplateConfig
       templateOptions.excludeSimilar === options.excludeSimilar &&
       templateOptions.preventRepeating === options.preventRepeating &&
       templateOptions.readableFormat === options.readableFormat;
-    
+
     if (matches) {
       return template;
     }
   }
-  
+
   return null;
 };
 
@@ -174,32 +180,32 @@ export const getRecommendedTemplates = (context?: string): TemplateConfig[] => {
   if (!context) {
     return PASSWORD_TEMPLATES;
   }
-  
+
   const recommendations: TemplateConfig[] = [];
-  
+
   switch (context.toLowerCase()) {
     case 'banking':
     case 'financial':
     case 'crypto':
       recommendations.push(HIGH_SECURITY_TEMPLATE, WEBSITE_TEMPLATE);
       break;
-      
+
     case 'social':
     case 'email':
     case 'shopping':
       recommendations.push(WEBSITE_TEMPLATE, SIMPLE_TEMPLATE);
       break;
-      
+
     case 'device':
     case 'phone':
     case 'tablet':
       recommendations.push(PIN_TEMPLATE, SIMPLE_TEMPLATE);
       break;
-      
+
     default:
       return PASSWORD_TEMPLATES;
   }
-  
+
   return recommendations;
 };
 
@@ -211,20 +217,24 @@ export const getRecommendedTemplates = (context?: string): TemplateConfig[] => {
 export const getTemplateStats = (template: TemplateConfig) => {
   const options = template.options;
   let characterSetSize = 0;
-  
-  if (options.includeUppercase) characterSetSize += options.excludeSimilar ? 24 : 26;
-  if (options.includeLowercase) characterSetSize += options.excludeSimilar ? 25 : 26;
-  if (options.includeNumbers) characterSetSize += options.excludeSimilar ? 8 : 10;
-  if (options.includeSymbols) characterSetSize += options.excludeSimilar ? 28 : 29;
-  
+
+  if (options.includeUppercase)
+    characterSetSize += options.excludeSimilar ? 24 : 26;
+  if (options.includeLowercase)
+    characterSetSize += options.excludeSimilar ? 25 : 26;
+  if (options.includeNumbers)
+    characterSetSize += options.excludeSimilar ? 8 : 10;
+  if (options.includeSymbols)
+    characterSetSize += options.excludeSimilar ? 28 : 29;
+
   const entropy = Math.log2(Math.pow(characterSetSize, options.length));
-  
+
   let securityLevel: 'Low' | 'Medium' | 'High' | 'Very High';
   if (entropy < 40) securityLevel = 'Low';
   else if (entropy < 60) securityLevel = 'Medium';
   else if (entropy < 80) securityLevel = 'High';
   else securityLevel = 'Very High';
-  
+
   return {
     characterSetSize,
     entropy: Math.round(entropy),
@@ -244,7 +254,7 @@ const calculateCrackTime = (entropy: number): string => {
   const totalCombinations = Math.pow(2, entropy);
   const avgCombinations = totalCombinations / 2; // Average case
   const seconds = avgCombinations / guessesPerSecond;
-  
+
   if (seconds < 60) return 'Less than 1 minute';
   if (seconds < 3600) return `${Math.round(seconds / 60)} minutes`;
   if (seconds < 86400) return `${Math.round(seconds / 3600)} hours`;

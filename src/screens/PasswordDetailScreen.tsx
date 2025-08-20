@@ -44,10 +44,10 @@ export default function PasswordDetailScreen() {
     try {
       setLoading(true);
       const passwordData = await passwordStorage.getById(passwordId);
-      
+
       if (!passwordData) {
         Alert.alert('Error', 'Password not found', [
-          { text: 'OK', onPress: () => navigation.goBack() }
+          { text: 'OK', onPress: () => navigation.goBack() },
         ]);
         return;
       }
@@ -67,17 +67,19 @@ export default function PasswordDetailScreen() {
     setCopying(true);
     try {
       await Clipboard.setStringAsync(password.password);
-      
+
       // Haptic feedback
       if (Platform.OS === 'ios') {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        await Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success
+        );
       } else {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
 
       // Mark password as used
       await markPasswordAsUsed(password.id);
-      
+
       // Update local state
       setPassword({
         ...password,
@@ -107,7 +109,10 @@ export default function PasswordDetailScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              if (Platform.OS === 'web' || !(await Sharing.isAvailableAsync())) {
+              if (
+                Platform.OS === 'web' ||
+                !(await Sharing.isAvailableAsync())
+              ) {
                 // Fallback to system share
                 await Share.share({
                   message: password.password,
@@ -115,9 +120,12 @@ export default function PasswordDetailScreen() {
                 });
               } else {
                 // Use Expo sharing
-                await Sharing.shareAsync('data:text/plain,' + password.password, {
-                  dialogTitle: `Share password for ${password.siteName}`,
-                });
+                await Sharing.shareAsync(
+                  'data:text/plain,' + password.password,
+                  {
+                    dialogTitle: `Share password for ${password.siteName}`,
+                  }
+                );
               }
             } catch (error) {
               console.error('Error sharing password:', error);
@@ -148,7 +156,7 @@ export default function PasswordDetailScreen() {
             try {
               await passwordStorage.delete(password.id);
               Alert.alert('Success', 'Password deleted successfully', [
-                { text: 'OK', onPress: () => navigation.goBack() }
+                { text: 'OK', onPress: () => navigation.goBack() },
               ]);
             } catch (error) {
               console.error('Error deleting password:', error);
@@ -162,22 +170,28 @@ export default function PasswordDetailScreen() {
 
   const getStrengthColor = (score: number): string => {
     switch (score) {
-      case 0: return Colors.danger;
-      case 1: return Colors.warning;
-      case 2: return '#FFA500';
-      case 3: return Colors.success;
-      case 4: return Colors.success;
-      default: return Colors.gray;
+      case 0:
+        return Colors.danger;
+      case 1:
+        return Colors.warning;
+      case 2:
+        return '#FFA500';
+      case 3:
+        return Colors.success;
+      case 4:
+        return Colors.success;
+      default:
+        return Colors.gray;
     }
   };
 
   const getStrengthLabel = (label: string): string => {
     const labels: Record<string, string> = {
       'very-weak': 'Very Weak',
-      'weak': 'Weak',
-      'fair': 'Fair',
-      'good': 'Good',
-      'strong': 'Strong',
+      weak: 'Weak',
+      fair: 'Fair',
+      good: 'Good',
+      strong: 'Strong',
     };
     return labels[label] || label;
   };
@@ -192,9 +206,12 @@ export default function PasswordDetailScreen() {
     });
   };
 
-  const formatPasswordDisplay = (pwd: string, readable: boolean = false): string => {
+  const formatPasswordDisplay = (
+    pwd: string,
+    readable: boolean = false
+  ): string => {
     if (!readable) return pwd;
-    
+
     // Format password in readable 4-character groups
     return pwd.match(/.{1,4}/g)?.join(' ') || pwd;
   };
@@ -230,10 +247,7 @@ export default function PasswordDetailScreen() {
           <Ionicons name="arrow-back" size={24} color={Colors.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Password Details</Text>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={handleEdit}
-        >
+        <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
           <Ionicons name="pencil-outline" size={20} color={Colors.primary} />
         </TouchableOpacity>
       </View>
@@ -242,20 +256,20 @@ export default function PasswordDetailScreen() {
         {/* Site Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Site Information</Text>
-          
+
           <View style={styles.infoCard}>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Site Name</Text>
               <Text style={styles.infoValue}>{password.siteName}</Text>
             </View>
-            
+
             {password.accountName && (
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Account</Text>
                 <Text style={styles.infoValue}>{password.accountName}</Text>
               </View>
             )}
-            
+
             {password.memo && (
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Notes</Text>
@@ -270,7 +284,7 @@ export default function PasswordDetailScreen() {
         {/* Password Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Password</Text>
-          
+
           <View style={styles.passwordCard}>
             <View style={styles.passwordHeader}>
               <Text style={styles.passwordLabel}>Generated Password</Text>
@@ -280,7 +294,7 @@ export default function PasswordDetailScreen() {
                   onPress={() => setShowPassword(!showPassword)}
                 >
                   <Ionicons
-                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                     size={20}
                     color={Colors.gray600}
                   />
@@ -291,7 +305,7 @@ export default function PasswordDetailScreen() {
                   disabled={copying}
                 >
                   <Ionicons
-                    name={copying ? "hourglass-outline" : "copy-outline"}
+                    name={copying ? 'hourglass-outline' : 'copy-outline'}
                     size={20}
                     color={Colors.primary}
                   />
@@ -308,16 +322,15 @@ export default function PasswordDetailScreen() {
                 </TouchableOpacity>
               </View>
             </View>
-            
+
             <View style={styles.passwordDisplay}>
               <Text style={styles.passwordText} selectable>
                 {showPassword
                   ? formatPasswordDisplay(password.password, true)
-                  : '•'.repeat(password.password.length)
-                }
+                  : '•'.repeat(password.password.length)}
               </Text>
             </View>
-            
+
             <View style={styles.passwordInfo}>
               <Text style={styles.passwordLength}>
                 {password.password.length} characters
@@ -329,7 +342,7 @@ export default function PasswordDetailScreen() {
         {/* Password Strength */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Password Strength</Text>
-          
+
           <View style={styles.strengthCard}>
             <View style={styles.strengthHeader}>
               <Text style={styles.strengthLabel}>
@@ -339,12 +352,12 @@ export default function PasswordDetailScreen() {
                 {password.strength.score}/4
               </Text>
             </View>
-            
+
             <PasswordStrengthBar
               strength={password.strength}
               style={styles.strengthBar}
             />
-            
+
             {password.strength.feedback.length > 0 && (
               <View style={styles.strengthFeedback}>
                 {password.strength.feedback.map((feedback, index) => (
@@ -360,7 +373,7 @@ export default function PasswordDetailScreen() {
         {/* Usage Statistics */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Usage Statistics</Text>
-          
+
           <View style={styles.statsCard}>
             <View style={styles.statRow}>
               <Text style={styles.statLabel}>Created</Text>
@@ -368,7 +381,7 @@ export default function PasswordDetailScreen() {
                 {formatDate(password.createdAt)}
               </Text>
             </View>
-            
+
             {password.lastUsed && (
               <View style={styles.statRow}>
                 <Text style={styles.statLabel}>Last Used</Text>
@@ -377,7 +390,7 @@ export default function PasswordDetailScreen() {
                 </Text>
               </View>
             )}
-            
+
             <View style={styles.statRow}>
               <Text style={styles.statLabel}>Usage Count</Text>
               <Text style={styles.statValue}>
@@ -395,7 +408,7 @@ export default function PasswordDetailScreen() {
             disabled={copying}
           >
             <Ionicons
-              name={copying ? "hourglass-outline" : "copy-outline"}
+              name={copying ? 'hourglass-outline' : 'copy-outline'}
               size={20}
               color={Colors.white}
             />

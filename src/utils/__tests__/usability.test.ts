@@ -295,7 +295,7 @@ describe('Usability Tests (UX Perspective)', () => {
             includeSymbols: false,
             excludeSimilar: false,
             preventRepeating: false,
-          readableFormat: false,
+            readableFormat: false,
           },
           expectedErrorPattern: /length must be between/i,
         },
@@ -308,7 +308,7 @@ describe('Usability Tests (UX Perspective)', () => {
             includeSymbols: false,
             excludeSimilar: false,
             preventRepeating: false,
-          readableFormat: false,
+            readableFormat: false,
           },
           expectedErrorPattern: /length must be between/i,
         },
@@ -319,7 +319,9 @@ describe('Usability Tests (UX Perspective)', () => {
           await generateSecurePassword(testCase.options as GeneratorOptions);
           fail('Should have thrown an error');
         } catch (error) {
-          expect((error as Error).message).toMatch(testCase.expectedErrorPattern);
+          expect((error as Error).message).toMatch(
+            testCase.expectedErrorPattern
+          );
           expect((error as Error).message.length).toBeGreaterThan(10); // Descriptive enough
         }
       }

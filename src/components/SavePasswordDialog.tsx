@@ -13,11 +13,11 @@ import {
 } from 'react-native';
 import { Colors } from '@/utils/colors';
 import { SavePasswordOptions, SavedPassword } from '@/utils/types';
-import { 
-  passwordStorage, 
-  generatePasswordId, 
+import {
+  passwordStorage,
+  generatePasswordId,
   getStorageLimit,
-  isStorageLimitReached 
+  isStorageLimitReached,
 } from '@/utils/passwordStorage';
 
 interface SavePasswordDialogProps {
@@ -80,7 +80,12 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
         `Free version allows ${storageInfo?.max || 10} passwords. Upgrade to premium for unlimited storage.`,
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Upgrade', onPress: () => {/* TODO: Handle premium upgrade */} },
+          {
+            text: 'Upgrade',
+            onPress: () => {
+              /* TODO: Handle premium upgrade */
+            },
+          },
         ]
       );
       return;
@@ -104,14 +109,14 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
 
       await passwordStorage.save(savedPassword);
       onSave(savedPassword);
-      
+
       // Reset form
       setSiteName('');
       setAccountName('');
       setMemo('');
-      
+
       onClose();
-      
+
       Alert.alert('Success', 'Password saved successfully!');
     } catch (error) {
       console.error('Error saving password:', error);
@@ -130,22 +135,28 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
 
   const getStrengthColor = (score: number): string => {
     switch (score) {
-      case 0: return Colors.danger;
-      case 1: return Colors.warning;
-      case 2: return '#FFA500';
-      case 3: return Colors.success;
-      case 4: return Colors.success;
-      default: return Colors.gray;
+      case 0:
+        return Colors.danger;
+      case 1:
+        return Colors.warning;
+      case 2:
+        return '#FFA500';
+      case 3:
+        return Colors.success;
+      case 4:
+        return Colors.success;
+      default:
+        return Colors.gray;
     }
   };
 
   const getStrengthLabel = (label: string): string => {
     const labels: Record<string, string> = {
       'very-weak': 'Very Weak',
-      'weak': 'Weak', 
-      'fair': 'Fair',
-      'good': 'Good',
-      'strong': 'Strong',
+      weak: 'Weak',
+      fair: 'Fair',
+      good: 'Good',
+      strong: 'Strong',
     };
     return labels[label] || label;
   };
@@ -166,8 +177,8 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
           <Text style={styles.title}>Save Password</Text>
-          <TouchableOpacity 
-            onPress={handleSave} 
+          <TouchableOpacity
+            onPress={handleSave}
             style={[styles.saveButton, saving && styles.saveButtonDisabled]}
             disabled={saving}
           >
@@ -185,10 +196,14 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
               <Text style={styles.passwordText} numberOfLines={1}>
                 {passwordData.password}
               </Text>
-              <View 
+              <View
                 style={[
-                  styles.strengthIndicator, 
-                  { backgroundColor: getStrengthColor(passwordData.strength.score) }
+                  styles.strengthIndicator,
+                  {
+                    backgroundColor: getStrengthColor(
+                      passwordData.strength.score
+                    ),
+                  },
                 ]}
               />
             </View>
@@ -201,20 +216,22 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
           {storageInfo && (
             <View style={styles.storageInfo}>
               <Text style={styles.storageText}>
-                {storageInfo.current}/{storageInfo.isPremium ? '∞' : storageInfo.max} passwords saved
+                {storageInfo.current}/
+                {storageInfo.isPremium ? '∞' : storageInfo.max} passwords saved
               </Text>
-              {!storageInfo.isPremium && storageInfo.current >= storageInfo.max - 2 && (
-                <Text style={styles.storageWarning}>
-                  {storageInfo.max - storageInfo.current} slots remaining
-                </Text>
-              )}
+              {!storageInfo.isPremium &&
+                storageInfo.current >= storageInfo.max - 2 && (
+                  <Text style={styles.storageWarning}>
+                    {storageInfo.max - storageInfo.current} slots remaining
+                  </Text>
+                )}
             </View>
           )}
 
           {/* Form Fields */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Details</Text>
-            
+
             {/* Site Name - Required */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>

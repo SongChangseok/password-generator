@@ -10,7 +10,7 @@ import {
 
 /**
  * Password Storage System - v1.2 Phase 3
- * 
+ *
  * Provides encrypted local storage for saved passwords using expo-secure-store
  * with AES-256 encryption. Implements search, sorting, and free version limits.
  */
@@ -29,7 +29,7 @@ export const generatePasswordId = async (): Promise<string> => {
   const timestamp = Date.now().toString();
   const randomBytes = await Crypto.getRandomBytesAsync(8);
   const randomHex = Array.from(randomBytes)
-    .map(byte => byte.toString(16).padStart(2, '0'))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
     .join('');
   return `pwd_${timestamp}_${randomHex}`;
 };
@@ -63,9 +63,9 @@ const getAllPasswords = async (): Promise<SavedPassword[]> => {
 
     const decryptedData = await decryptData(encryptedData);
     const passwords: SavedPassword[] = JSON.parse(decryptedData);
-    
+
     // Validate and sanitize data
-    return passwords.map(password => ({
+    return passwords.map((password) => ({
       ...password,
       createdAt: new Date(password.createdAt),
       lastUsed: password.lastUsed ? new Date(password.lastUsed) : undefined,
@@ -93,28 +93,39 @@ const saveAllPasswords = async (passwords: SavedPassword[]): Promise<void> => {
 /**
  * Sort passwords based on specified order
  */
-const sortPasswords = (passwords: SavedPassword[], sortOrder: SortOrder): SavedPassword[] => {
+const sortPasswords = (
+  passwords: SavedPassword[],
+  sortOrder: SortOrder
+): SavedPassword[] => {
   const sorted = [...passwords];
-  
+
   switch (sortOrder) {
     case SortOrder.NEWEST_FIRST:
-      return sorted.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    
+      return sorted.sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+      );
+
     case SortOrder.OLDEST_FIRST:
-      return sorted.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-    
+      return sorted.sort(
+        (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+      );
+
     case SortOrder.NAME_ASC:
-      return sorted.sort((a, b) => a.siteName.toLowerCase().localeCompare(b.siteName.toLowerCase()));
-    
+      return sorted.sort((a, b) =>
+        a.siteName.toLowerCase().localeCompare(b.siteName.toLowerCase())
+      );
+
     case SortOrder.NAME_DESC:
-      return sorted.sort((a, b) => b.siteName.toLowerCase().localeCompare(a.siteName.toLowerCase()));
-    
+      return sorted.sort((a, b) =>
+        b.siteName.toLowerCase().localeCompare(a.siteName.toLowerCase())
+      );
+
     case SortOrder.STRENGTH_DESC:
       return sorted.sort((a, b) => b.strength.score - a.strength.score);
-    
+
     case SortOrder.MOST_USED:
       return sorted.sort((a, b) => b.usageCount - a.usageCount);
-    
+
     default:
       return sorted;
   }
@@ -124,7 +135,7 @@ const sortPasswords = (passwords: SavedPassword[], sortOrder: SortOrder): SavedP
  * Filter and search passwords
  */
 const searchPasswords = (
-  passwords: SavedPassword[], 
+  passwords: SavedPassword[],
   options: SearchOptions
 ): SavedPassword[] => {
   let filtered = passwords;
@@ -132,17 +143,18 @@ const searchPasswords = (
   // Apply text search
   if (options.query.trim()) {
     const query = options.query.toLowerCase().trim();
-    filtered = passwords.filter(password =>
-      password.siteName.toLowerCase().includes(query) ||
-      password.accountName?.toLowerCase().includes(query) ||
-      password.memo?.toLowerCase().includes(query)
+    filtered = passwords.filter(
+      (password) =>
+        password.siteName.toLowerCase().includes(query) ||
+        password.accountName?.toLowerCase().includes(query) ||
+        password.memo?.toLowerCase().includes(query)
     );
   }
 
   // Apply strength filter
   if (options.strengthFilter !== undefined) {
-    filtered = filtered.filter(password => 
-      password.strength.score >= options.strengthFilter!
+    filtered = filtered.filter(
+      (password) => password.strength.score >= options.strengthFilter!
     );
   }
 
@@ -156,10 +168,13 @@ const searchPasswords = (
 const checkAndMigrateStorage = async (): Promise<void> => {
   try {
     const currentVersion = await SecureStore.getItemAsync(STORAGE_VERSION_KEY);
-    
+
     if (currentVersion !== CURRENT_STORAGE_VERSION) {
       // Future: Add migration logic here when storage format changes
-      await SecureStore.setItemAsync(STORAGE_VERSION_KEY, CURRENT_STORAGE_VERSION);
+      await SecureStore.setItemAsync(
+        STORAGE_VERSION_KEY,
+        CURRENT_STORAGE_VERSION
+      );
     }
   } catch (error) {
     console.error('Error checking storage version:', error);
@@ -171,10 +186,10 @@ const checkAndMigrateStorage = async (): Promise<void> => {
  */
 export const getStorageLimit = async (): Promise<StorageLimit> => {
   const passwords = await getAllPasswords();
-  
+
   // TODO: In future versions, check premium status from user settings
   const isPremium = false;
-  
+
   return {
     maxPasswords: isPremium ? Number.MAX_SAFE_INTEGER : FREE_VERSION_LIMIT,
     currentCount: passwords.length,
@@ -191,17 +206,19 @@ export const passwordStorage: PasswordStorage = {
    */
   save: async (password: SavedPassword): Promise<void> => {
     await checkAndMigrateStorage();
-    
+
     // Check storage limit
     const limit = await getStorageLimit();
     if (limit.currentCount >= limit.maxPasswords) {
-      throw new Error(`Storage limit reached. Free version allows ${limit.maxPasswords} passwords.`);
+      throw new Error(
+        `Storage limit reached. Free version allows ${limit.maxPasswords} passwords.`
+      );
     }
 
     const passwords = await getAllPasswords();
-    
+
     // Check if password with same ID already exists
-    const existingIndex = passwords.findIndex(p => p.id === password.id);
+    const existingIndex = passwords.findIndex((p) => p.id === password.id);
     if (existingIndex >= 0) {
       throw new Error('Password with this ID already exists');
     }
@@ -224,16 +241,19 @@ export const passwordStorage: PasswordStorage = {
    */
   getById: async (id: string): Promise<SavedPassword | null> => {
     const passwords = await getAllPasswords();
-    return passwords.find(p => p.id === id) || null;
+    return passwords.find((p) => p.id === id) || null;
   },
 
   /**
    * Update password metadata (not the password itself)
    */
-  update: async (id: string, updates: Partial<SavedPassword>): Promise<void> => {
+  update: async (
+    id: string,
+    updates: Partial<SavedPassword>
+  ): Promise<void> => {
     const passwords = await getAllPasswords();
-    const index = passwords.findIndex(p => p.id === id);
-    
+    const index = passwords.findIndex((p) => p.id === id);
+
     if (index === -1) {
       throw new Error('Password not found');
     }
@@ -250,7 +270,9 @@ export const passwordStorage: PasswordStorage = {
     passwords[index] = {
       ...passwords[index],
       ...Object.fromEntries(
-        Object.entries(allowedUpdates).filter(([_, value]) => value !== undefined)
+        Object.entries(allowedUpdates).filter(
+          ([_, value]) => value !== undefined
+        )
       ),
     };
 
@@ -262,8 +284,8 @@ export const passwordStorage: PasswordStorage = {
    */
   delete: async (id: string): Promise<void> => {
     const passwords = await getAllPasswords();
-    const filteredPasswords = passwords.filter(p => p.id !== id);
-    
+    const filteredPasswords = passwords.filter((p) => p.id !== id);
+
     if (filteredPasswords.length === passwords.length) {
       throw new Error('Password not found');
     }
@@ -326,26 +348,31 @@ export const isStorageLimitReached = async (): Promise<boolean> => {
 export const getStorageStats = async () => {
   const passwords = await getAllPasswords();
   const limit = await getStorageLimit();
-  
-  const strengthDistribution = passwords.reduce((acc, password) => {
-    acc[password.strength.label] = (acc[password.strength.label] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+
+  const strengthDistribution = passwords.reduce(
+    (acc, password) => {
+      acc[password.strength.label] = (acc[password.strength.label] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   return {
     totalPasswords: passwords.length,
     limit: limit.maxPasswords,
     isPremium: limit.isPremium,
     strengthDistribution,
-    oldestPassword: passwords.length > 0 
-      ? passwords.reduce((oldest, current) => 
-          current.createdAt < oldest.createdAt ? current : oldest
-        ).createdAt
-      : null,
-    newestPassword: passwords.length > 0
-      ? passwords.reduce((newest, current) => 
-          current.createdAt > newest.createdAt ? current : newest
-        ).createdAt
-      : null,
+    oldestPassword:
+      passwords.length > 0
+        ? passwords.reduce((oldest, current) =>
+            current.createdAt < oldest.createdAt ? current : oldest
+          ).createdAt
+        : null,
+    newestPassword:
+      passwords.length > 0
+        ? passwords.reduce((newest, current) =>
+            current.createdAt > newest.createdAt ? current : newest
+          ).createdAt
+        : null,
   };
 };

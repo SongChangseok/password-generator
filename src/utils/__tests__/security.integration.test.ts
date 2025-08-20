@@ -6,25 +6,13 @@
 import * as SecureStore from 'expo-secure-store';
 import * as LocalAuthentication from 'expo-local-authentication';
 
-// Mock Expo modules
-jest.mock('expo-secure-store');
-jest.mock('expo-local-authentication');
-
-const mockSecureStore = SecureStore as jest.Mocked<typeof SecureStore>;
-const mockLocalAuth = LocalAuthentication as jest.Mocked<typeof LocalAuthentication>;
-
 import {
   authenticateUser,
   checkBiometricCapabilities,
   isBiometricAuthEnabled,
   setBiometricAuthEnabled,
 } from '../biometricAuth';
-import {
-  verifyPin,
-  setupPin,
-  isPinConfigured,
-  isPinEnabled,
-} from '../pinAuth';
+import { verifyPin, setupPin, isPinConfigured, isPinEnabled } from '../pinAuth';
 import {
   initializeAppLock,
   shouldAppBeLocked,
@@ -32,6 +20,15 @@ import {
   setAppLockSettings,
   isAppLockAvailable,
 } from '../appLock';
+
+// Mock Expo modules
+jest.mock('expo-secure-store');
+jest.mock('expo-local-authentication');
+
+const mockSecureStore = SecureStore as jest.Mocked<typeof SecureStore>;
+const mockLocalAuth = LocalAuthentication as jest.Mocked<
+  typeof LocalAuthentication
+>;
 
 describe('Security Integration Tests', () => {
   beforeEach(() => {
@@ -220,13 +217,19 @@ describe('Security Integration Tests', () => {
 
       expect(result.isValid).toBe(true);
       // Should clear attempts on success
-      expect(mockSecureStore.deleteItemAsync).toHaveBeenCalledWith('pin_attempts');
-      expect(mockSecureStore.deleteItemAsync).toHaveBeenCalledWith('pin_last_attempt');
+      expect(mockSecureStore.deleteItemAsync).toHaveBeenCalledWith(
+        'pin_attempts'
+      );
+      expect(mockSecureStore.deleteItemAsync).toHaveBeenCalledWith(
+        'pin_last_attempt'
+      );
     });
 
     it('should properly setup PIN with secure hashing', async () => {
       const crypto = require('expo-crypto');
-      jest.spyOn(crypto, 'getRandomBytesAsync').mockResolvedValue(new Uint8Array(32));
+      jest
+        .spyOn(crypto, 'getRandomBytesAsync')
+        .mockResolvedValue(new Uint8Array(32));
       jest.spyOn(crypto, 'digestStringAsync').mockResolvedValue('hashed_pin');
 
       await setupPin('1234');
@@ -259,8 +262,10 @@ describe('Security Integration Tests', () => {
       };
 
       mockSecureStore.getItemAsync.mockImplementation((key) => {
-        if (key === 'app_lock_settings') return Promise.resolve(JSON.stringify(mockSettings));
-        if (key === 'app_lock_state') return Promise.resolve(JSON.stringify(mockState));
+        if (key === 'app_lock_settings')
+          return Promise.resolve(JSON.stringify(mockSettings));
+        if (key === 'app_lock_state')
+          return Promise.resolve(JSON.stringify(mockState));
         return Promise.resolve(null);
       });
 
@@ -284,8 +289,10 @@ describe('Security Integration Tests', () => {
       };
 
       mockSecureStore.getItemAsync.mockImplementation((key) => {
-        if (key === 'app_lock_settings') return Promise.resolve(JSON.stringify(mockSettings));
-        if (key === 'app_lock_state') return Promise.resolve(JSON.stringify(mockState));
+        if (key === 'app_lock_settings')
+          return Promise.resolve(JSON.stringify(mockSettings));
+        if (key === 'app_lock_state')
+          return Promise.resolve(JSON.stringify(mockState));
         return Promise.resolve(null);
       });
 
@@ -309,8 +316,10 @@ describe('Security Integration Tests', () => {
       };
 
       mockSecureStore.getItemAsync.mockImplementation((key) => {
-        if (key === 'app_lock_settings') return Promise.resolve(JSON.stringify(mockSettings));
-        if (key === 'app_lock_state') return Promise.resolve(JSON.stringify(mockState));
+        if (key === 'app_lock_settings')
+          return Promise.resolve(JSON.stringify(mockSettings));
+        if (key === 'app_lock_state')
+          return Promise.resolve(JSON.stringify(mockState));
         return Promise.resolve(null);
       });
 

@@ -89,17 +89,17 @@ export interface StorageLimit {
 // Advanced generation options (v1.2)
 export interface AdvancedGeneratorOptions extends GeneratorOptions {
   excludeSimilarChars: boolean; // 0/O, 1/l/I exclusion
-  preventConsecutive: boolean;  // Prevent same character repeating
-  readableFormat: boolean;      // 4-digit separation display
-  template?: PasswordTemplate;  // Preset templates
+  preventConsecutive: boolean; // Prevent same character repeating
+  readableFormat: boolean; // 4-digit separation display
+  template?: PasswordTemplate; // Preset templates
 }
 
 // Password generation templates
 export enum PasswordTemplate {
-  WEBSITE = 'website',             // General website requirements
+  WEBSITE = 'website', // General website requirements
   HIGH_SECURITY = 'high_security', // Maximum security settings
-  PIN_NUMBER = 'pin_number',       // Numeric PIN 4-8 digits
-  SIMPLE = 'simple'                // Simple passwords without symbols
+  PIN_NUMBER = 'pin_number', // Numeric PIN 4-8 digits
+  SIMPLE = 'simple', // Simple passwords without symbols
 }
 
 // Template configurations

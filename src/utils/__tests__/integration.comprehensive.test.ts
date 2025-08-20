@@ -72,7 +72,7 @@ describe('Comprehensive Integration Tests', () => {
           ...testCase,
           excludeSimilar: false,
           preventRepeating: false,
-        readableFormat: false,
+          readableFormat: false,
         };
 
         const result = await generateSecurePassword(options);

@@ -58,7 +58,9 @@ export const PasswordDisplay: React.FC<PasswordDisplayProps> = ({
         activeOpacity={0.7}
       >
         <Text style={styles.password} selectable>
-          {password ? getPasswordDisplayText(password, readableFormat) : 'Tap "Generate" to create a password'}
+          {password
+            ? getPasswordDisplayText(password, readableFormat)
+            : 'Tap "Generate" to create a password'}
         </Text>
         <View style={styles.copyHint}>
           <Text style={styles.copyHintText}>Tap to copy</Text>

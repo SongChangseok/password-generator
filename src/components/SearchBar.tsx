@@ -69,15 +69,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           clearButtonMode={Platform.OS === 'ios' ? 'while-editing' : 'never'}
         />
         {query.length > 0 && Platform.OS === 'android' && (
-          <TouchableOpacity
-            style={styles.clearButton}
-            onPress={handleClear}
-          >
-            <Ionicons
-              name="close-circle"
-              size={18}
-              color={Colors.gray400}
-            />
+          <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
+            <Ionicons name="close-circle" size={18} color={Colors.gray400} />
           </TouchableOpacity>
         )}
       </View>

@@ -33,22 +33,28 @@ export const PasswordCard: React.FC<PasswordCardProps> = ({
 
   const getStrengthColor = (score: number): string => {
     switch (score) {
-      case 0: return Colors.danger;
-      case 1: return Colors.warning;
-      case 2: return '#FFA500';
-      case 3: return Colors.success;
-      case 4: return Colors.success;
-      default: return Colors.gray;
+      case 0:
+        return Colors.danger;
+      case 1:
+        return Colors.warning;
+      case 2:
+        return '#FFA500';
+      case 3:
+        return Colors.success;
+      case 4:
+        return Colors.success;
+      default:
+        return Colors.gray;
     }
   };
 
   const getStrengthLabel = (label: string): string => {
     const labels: Record<string, string> = {
       'very-weak': 'Very Weak',
-      'weak': 'Weak',
-      'fair': 'Fair',
-      'good': 'Good',
-      'strong': 'Strong',
+      weak: 'Weak',
+      fair: 'Fair',
+      good: 'Good',
+      strong: 'Strong',
     };
     return labels[label] || label;
   };
@@ -71,10 +77,12 @@ export const PasswordCard: React.FC<PasswordCardProps> = ({
     setCopying(true);
     try {
       await Clipboard.setStringAsync(password.password);
-      
+
       // Haptic feedback
       if (Platform.OS === 'ios') {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        await Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success
+        );
       } else {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
@@ -108,7 +116,11 @@ export const PasswordCard: React.FC<PasswordCardProps> = ({
       { text: 'Cancel', onPress: () => {} }
     );
 
-    Alert.alert('Password Options', `Options for ${password.siteName}`, options);
+    Alert.alert(
+      'Password Options',
+      `Options for ${password.siteName}`,
+      options
+    );
   };
 
   return (
@@ -132,15 +144,12 @@ export const PasswordCard: React.FC<PasswordCardProps> = ({
                 disabled={copying}
               >
                 <Ionicons
-                  name={copying ? "hourglass-outline" : "copy-outline"}
+                  name={copying ? 'hourglass-outline' : 'copy-outline'}
                   size={18}
                   color={Colors.primary}
                 />
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={onDelete}
-              >
+              <TouchableOpacity style={styles.actionButton} onPress={onDelete}>
                 <Ionicons
                   name="trash-outline"
                   size={18}
@@ -185,7 +194,9 @@ export const PasswordCard: React.FC<PasswordCardProps> = ({
               <View
                 style={[
                   styles.strengthDot,
-                  { backgroundColor: getStrengthColor(password.strength.score) }
+                  {
+                    backgroundColor: getStrengthColor(password.strength.score),
+                  },
                 ]}
               />
               <Text style={styles.strengthText}>
@@ -198,9 +209,7 @@ export const PasswordCard: React.FC<PasswordCardProps> = ({
             {password.usageCount > 0 && (
               <View style={styles.usageContainer}>
                 <Ionicons name="eye-outline" size={12} color={Colors.gray400} />
-                <Text style={styles.usageText}>
-                  {password.usageCount}
-                </Text>
+                <Text style={styles.usageText}>{password.usageCount}</Text>
               </View>
             )}
             {password.lastUsed && (
@@ -214,7 +223,11 @@ export const PasswordCard: React.FC<PasswordCardProps> = ({
 
       {/* Visual indicator for tap action */}
       <View style={styles.tapIndicator}>
-        <Ionicons name="chevron-forward-outline" size={16} color={Colors.gray300} />
+        <Ionicons
+          name="chevron-forward-outline"
+          size={16}
+          color={Colors.gray300}
+        />
       </View>
     </TouchableOpacity>
   );
@@ -229,12 +242,18 @@ export const PasswordCardCompact: React.FC<PasswordCardProps> = ({
 }) => {
   const getStrengthColor = (score: number): string => {
     switch (score) {
-      case 0: return Colors.danger;
-      case 1: return Colors.warning;
-      case 2: return '#FFA500';
-      case 3: return Colors.success;
-      case 4: return Colors.success;
-      default: return Colors.gray;
+      case 0:
+        return Colors.danger;
+      case 1:
+        return Colors.warning;
+      case 2:
+        return '#FFA500';
+      case 3:
+        return Colors.success;
+      case 4:
+        return Colors.success;
+      default:
+        return Colors.gray;
     }
   };
 
@@ -275,13 +294,11 @@ export const PasswordCardCompact: React.FC<PasswordCardProps> = ({
           <View
             style={[
               styles.compactStrengthDot,
-              { backgroundColor: getStrengthColor(password.strength.score) }
+              { backgroundColor: getStrengthColor(password.strength.score) },
             ]}
           />
           {password.usageCount > 0 && (
-            <Text style={styles.compactUsage}>
-              {password.usageCount}
-            </Text>
+            <Text style={styles.compactUsage}>{password.usageCount}</Text>
           )}
         </View>
       </View>

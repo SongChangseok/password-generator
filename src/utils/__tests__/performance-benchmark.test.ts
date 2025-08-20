@@ -61,7 +61,7 @@ describe('Performance Benchmarks', () => {
           includeSymbols: true,
           excludeSimilar: false,
           preventRepeating: false,
-        readableFormat: false,
+          readableFormat: false,
         };
 
         const times: number[] = [];

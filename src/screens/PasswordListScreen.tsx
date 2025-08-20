@@ -26,7 +26,9 @@ interface PasswordListScreenProps {
 export default function PasswordListScreen() {
   const navigation = useNavigation();
   const [allPasswords, setAllPasswords] = useState<SavedPassword[]>([]);
-  const [filteredPasswords, setFilteredPasswords] = useState<SavedPassword[]>([]);
+  const [filteredPasswords, setFilteredPasswords] = useState<SavedPassword[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.NEWEST_FIRST);
@@ -56,7 +58,7 @@ export default function PasswordListScreen() {
 
       const sortedPasswords = sortPasswords(passwordList, sortOrder);
       setAllPasswords(sortedPasswords);
-      
+
       // Apply search if there's a query
       if (searchQuery.trim()) {
         const result = searchPasswords(sortedPasswords, searchQuery);
@@ -127,7 +129,7 @@ export default function PasswordListScreen() {
       { title: 'Most Used', value: SortOrder.MOST_USED },
     ];
 
-    const options = sortOptions.map(option => ({
+    const options = sortOptions.map((option) => ({
       text: option.title,
       onPress: () => handleSortChange(option.value),
     }));
@@ -136,41 +138,48 @@ export default function PasswordListScreen() {
     Alert.alert('Sort Passwords', 'Choose sorting order:', options as any);
   };
 
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query);
-    
-    if (!query.trim()) {
-      // No search query - show all passwords
-      setFilteredPasswords(allPasswords);
-      setSearchResult(null);
-      return;
-    }
-    
-    // Perform search with performance measurement
-    const result = searchPasswords(allPasswords, query, {
-      includeAccountName: true,
-      includeMemo: true,
-      caseSensitive: false,
-      exactMatch: false,
-    });
-    
-    setFilteredPasswords(result.passwords);
-    setSearchResult(result);
-    
-    // Log search performance for debugging
-    if (__DEV__) {
-      console.log(`Search completed in ${result.searchTime.toFixed(2)}ms for "${query}"`);
-      console.log(`Found ${result.matchCount} matches out of ${allPasswords.length} total passwords`);
-    }
-  }, [allPasswords]);
+  const handleSearch = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+
+      if (!query.trim()) {
+        // No search query - show all passwords
+        setFilteredPasswords(allPasswords);
+        setSearchResult(null);
+        return;
+      }
+
+      // Perform search with performance measurement
+      const result = searchPasswords(allPasswords, query, {
+        includeAccountName: true,
+        includeMemo: true,
+        caseSensitive: false,
+        exactMatch: false,
+      });
+
+      setFilteredPasswords(result.passwords);
+      setSearchResult(result);
+
+      // Log search performance for debugging
+      if (__DEV__) {
+        console.log(
+          `Search completed in ${result.searchTime.toFixed(2)}ms for "${query}"`
+        );
+        console.log(
+          `Found ${result.matchCount} matches out of ${allPasswords.length} total passwords`
+        );
+      }
+    },
+    [allPasswords]
+  );
 
   const handleSortChange = async (newSortOrder: SortOrder) => {
     setSortOrder(newSortOrder);
-    
+
     // Re-sort all passwords
     const sortedAllPasswords = sortPasswords([...allPasswords], newSortOrder);
     setAllPasswords(sortedAllPasswords);
-    
+
     // Apply search to newly sorted data
     if (searchQuery.trim()) {
       const result = searchPasswords(sortedAllPasswords, searchQuery);
@@ -181,18 +190,29 @@ export default function PasswordListScreen() {
     }
   };
 
-  const sortPasswords = (passwordList: SavedPassword[], order: SortOrder): SavedPassword[] => {
+  const sortPasswords = (
+    passwordList: SavedPassword[],
+    order: SortOrder
+  ): SavedPassword[] => {
     const sorted = [...passwordList];
-    
+
     switch (order) {
       case SortOrder.NEWEST_FIRST:
-        return sorted.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        return sorted.sort(
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        );
       case SortOrder.OLDEST_FIRST:
-        return sorted.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        return sorted.sort(
+          (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+        );
       case SortOrder.NAME_ASC:
-        return sorted.sort((a, b) => a.siteName.toLowerCase().localeCompare(b.siteName.toLowerCase()));
+        return sorted.sort((a, b) =>
+          a.siteName.toLowerCase().localeCompare(b.siteName.toLowerCase())
+        );
       case SortOrder.NAME_DESC:
-        return sorted.sort((a, b) => b.siteName.toLowerCase().localeCompare(a.siteName.toLowerCase()));
+        return sorted.sort((a, b) =>
+          b.siteName.toLowerCase().localeCompare(a.siteName.toLowerCase())
+        );
       case SortOrder.STRENGTH_DESC:
         return sorted.sort((a, b) => b.strength.score - a.strength.score);
       case SortOrder.MOST_USED:
@@ -230,13 +250,20 @@ export default function PasswordListScreen() {
 
   const getSortOrderLabel = (order: SortOrder): string => {
     switch (order) {
-      case SortOrder.NEWEST_FIRST: return 'Newest First';
-      case SortOrder.OLDEST_FIRST: return 'Oldest First';
-      case SortOrder.NAME_ASC: return 'Name A-Z';
-      case SortOrder.NAME_DESC: return 'Name Z-A';
-      case SortOrder.STRENGTH_DESC: return 'Strongest First';
-      case SortOrder.MOST_USED: return 'Most Used';
-      default: return 'Sort';
+      case SortOrder.NEWEST_FIRST:
+        return 'Newest First';
+      case SortOrder.OLDEST_FIRST:
+        return 'Oldest First';
+      case SortOrder.NAME_ASC:
+        return 'Name A-Z';
+      case SortOrder.NAME_DESC:
+        return 'Name Z-A';
+      case SortOrder.STRENGTH_DESC:
+        return 'Strongest First';
+      case SortOrder.MOST_USED:
+        return 'Most Used';
+      default:
+        return 'Sort';
     }
   };
 
@@ -304,13 +331,21 @@ export default function PasswordListScreen() {
                 style={styles.headerButton}
                 onPress={handleSortPress}
               >
-                <Ionicons name="funnel-outline" size={20} color={Colors.primary} />
+                <Ionicons
+                  name="funnel-outline"
+                  size={20}
+                  color={Colors.primary}
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.headerButton}
                 onPress={handleDeleteAll}
               >
-                <Ionicons name="trash-outline" size={20} color={Colors.danger} />
+                <Ionicons
+                  name="trash-outline"
+                  size={20}
+                  color={Colors.danger}
+                />
               </TouchableOpacity>
             </>
           )}
@@ -331,27 +366,38 @@ export default function PasswordListScreen() {
         <View style={styles.storageInfo}>
           <View style={styles.storageLeft}>
             <Text style={styles.storageText}>
-              {storageStats.totalPasswords}/{storageStats.isPremium ? '∞' : storageStats.limit} passwords
+              {storageStats.totalPasswords}/
+              {storageStats.isPremium ? '∞' : storageStats.limit} passwords
             </Text>
             {searchResult && (
               <Text style={styles.searchResultText}>
-                {searchResult.matchCount} result{searchResult.matchCount !== 1 ? 's' : ''} 
+                {searchResult.matchCount} result
+                {searchResult.matchCount !== 1 ? 's' : ''}
                 {searchResult.searchTime < 100 ? (
-                  <Text style={styles.performanceGood}> ({searchResult.searchTime.toFixed(1)}ms)</Text>
+                  <Text style={styles.performanceGood}>
+                    {' '}
+                    ({searchResult.searchTime.toFixed(1)}ms)
+                  </Text>
                 ) : (
-                  <Text style={styles.performanceSlow}> ({searchResult.searchTime.toFixed(1)}ms)</Text>
+                  <Text style={styles.performanceSlow}>
+                    {' '}
+                    ({searchResult.searchTime.toFixed(1)}ms)
+                  </Text>
                 )}
               </Text>
             )}
           </View>
-          {!storageStats.isPremium && storageStats.totalPasswords >= storageStats.limit - 2 && (
-            <TouchableOpacity
-              style={styles.upgradeButton}
-              onPress={() => {/* TODO: Navigate to premium upgrade */}}
-            >
-              <Text style={styles.upgradeButtonText}>Upgrade to Premium</Text>
-            </TouchableOpacity>
-          )}
+          {!storageStats.isPremium &&
+            storageStats.totalPasswords >= storageStats.limit - 2 && (
+              <TouchableOpacity
+                style={styles.upgradeButton}
+                onPress={() => {
+                  /* TODO: Navigate to premium upgrade */
+                }}
+              >
+                <Text style={styles.upgradeButtonText}>Upgrade to Premium</Text>
+              </TouchableOpacity>
+            )}
         </View>
       )}
 
@@ -374,12 +420,18 @@ export default function PasswordListScreen() {
         data={filteredPasswords}
         renderItem={renderPasswordItem}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={filteredPasswords.length === 0 ? styles.emptyContainer : styles.listContent}
+        contentContainerStyle={
+          filteredPasswords.length === 0
+            ? styles.emptyContainer
+            : styles.listContent
+        }
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={searchQuery.trim() ? renderNoResultsState : renderEmptyState}
+        ListEmptyComponent={
+          searchQuery.trim() ? renderNoResultsState : renderEmptyState
+        }
       />
     </SafeAreaView>
   );
@@ -393,22 +445,28 @@ const PasswordListItem: React.FC<{
 }> = ({ password, onPress, onDelete }) => {
   const getStrengthColor = (score: number): string => {
     switch (score) {
-      case 0: return Colors.danger;
-      case 1: return Colors.warning;
-      case 2: return '#FFA500';
-      case 3: return Colors.success;
-      case 4: return Colors.success;
-      default: return Colors.gray;
+      case 0:
+        return Colors.danger;
+      case 1:
+        return Colors.warning;
+      case 2:
+        return '#FFA500';
+      case 3:
+        return Colors.success;
+      case 4:
+        return Colors.success;
+      default:
+        return Colors.gray;
     }
   };
 
   const getStrengthLabel = (label: string): string => {
     const labels: Record<string, string> = {
       'very-weak': 'Very Weak',
-      'weak': 'Weak',
-      'fair': 'Fair', 
-      'good': 'Good',
-      'strong': 'Strong',
+      weak: 'Weak',
+      fair: 'Fair',
+      good: 'Good',
+      strong: 'Strong',
     };
     return labels[label] || label;
   };
@@ -453,14 +511,12 @@ const PasswordListItem: React.FC<{
 
         {/* Footer info */}
         <View style={styles.passwordItemFooter}>
-          <Text style={styles.dateText}>
-            {formatDate(password.createdAt)}
-          </Text>
+          <Text style={styles.dateText}>{formatDate(password.createdAt)}</Text>
           <View style={styles.strengthContainer}>
-            <View 
+            <View
               style={[
                 styles.strengthDot,
-                { backgroundColor: getStrengthColor(password.strength.score) }
+                { backgroundColor: getStrengthColor(password.strength.score) },
               ]}
             />
             <Text style={styles.strengthText}>
@@ -469,7 +525,8 @@ const PasswordListItem: React.FC<{
           </View>
           {password.usageCount > 0 && (
             <Text style={styles.usageText}>
-              Used {password.usageCount} time{password.usageCount !== 1 ? 's' : ''}
+              Used {password.usageCount} time
+              {password.usageCount !== 1 ? 's' : ''}
             </Text>
           )}
         </View>

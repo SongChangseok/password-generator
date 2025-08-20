@@ -11,10 +11,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/utils/colors';
 import { GeneratorOptions, TemplateConfig } from '@/utils/types';
-import { 
-  PASSWORD_TEMPLATES, 
-  detectCurrentTemplate, 
-  getTemplateStats 
+import {
+  PASSWORD_TEMPLATES,
+  detectCurrentTemplate,
+  getTemplateStats,
 } from '@/utils/passwordTemplates';
 
 interface TemplateSelectorProps {
@@ -56,7 +56,11 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
       >
         <View style={styles.selectorContent}>
           <View style={styles.selectorLeft}>
-            <Ionicons name="bookmark-outline" size={20} color={Colors.primary} />
+            <Ionicons
+              name="bookmark-outline"
+              size={20}
+              color={Colors.primary}
+            />
             <Text style={styles.selectorLabel}>Template</Text>
           </View>
           <View style={styles.selectorRight}>
@@ -90,7 +94,8 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           {/* Template List */}
           <ScrollView style={styles.templateList}>
             <Text style={styles.sectionDescription}>
-              Choose a preset template to quickly configure password generation options
+              Choose a preset template to quickly configure password generation
+              options
             </Text>
 
             {PASSWORD_TEMPLATES.map((template, index) => {
@@ -100,29 +105,45 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
               return (
                 <TouchableOpacity
                   key={index}
-                  style={[styles.templateCard, isSelected && styles.selectedCard]}
+                  style={[
+                    styles.templateCard,
+                    isSelected && styles.selectedCard,
+                  ]}
                   onPress={() => handleTemplateSelect(template)}
                 >
                   <View style={styles.templateHeader}>
-                    <Text style={[styles.templateName, isSelected && styles.selectedText]}>
+                    <Text
+                      style={[
+                        styles.templateName,
+                        isSelected && styles.selectedText,
+                      ]}
+                    >
                       {template.name}
                     </Text>
                     <View style={styles.securityBadge}>
-                      <Text style={styles.securityLevel}>{stats.securityLevel}</Text>
+                      <Text style={styles.securityLevel}>
+                        {stats.securityLevel}
+                      </Text>
                     </View>
                     {isSelected && (
-                      <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={20}
+                        color={Colors.success}
+                      />
                     )}
                   </View>
-                  
+
                   <Text style={styles.templateDescription}>
                     {template.description}
                   </Text>
-                  
+
                   <View style={styles.templateStats}>
                     <View style={styles.statItem}>
                       <Text style={styles.statLabel}>Length</Text>
-                      <Text style={styles.statValue}>{template.options.length}</Text>
+                      <Text style={styles.statValue}>
+                        {template.options.length}
+                      </Text>
                     </View>
                     <View style={styles.statItem}>
                       <Text style={styles.statLabel}>Entropy</Text>
@@ -130,10 +151,12 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
                     </View>
                     <View style={styles.statItem}>
                       <Text style={styles.statLabel}>Crack Time</Text>
-                      <Text style={styles.statValue}>{stats.estimatedCrackTime}</Text>
+                      <Text style={styles.statValue}>
+                        {stats.estimatedCrackTime}
+                      </Text>
                     </View>
                   </View>
-                  
+
                   <View style={styles.templateOptions}>
                     {template.options.includeUppercase && (
                       <View style={styles.optionChip}>

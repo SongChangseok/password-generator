@@ -16,6 +16,22 @@ const SIMILAR_CHARS = {
   symbols: '|',
 };
 
+// Pre-compiled regex patterns for security (prevents ReDoS attacks)
+const SIMILAR_CHAR_PATTERNS = {
+  uppercase: /[IL]/g,
+  lowercase: /[l]/g,
+  numbers: /[01]/g,
+  symbols: /[\|]/g,
+};
+
+// Pre-compiled character test patterns for security
+const CHARACTER_TEST_PATTERNS = {
+  uppercase: /[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/,
+  lowercase: /[abcdefghijklmnopqrstuvwxyz]/,
+  numbers: /[0123456789]/,
+  symbols: /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/,
+};
+
 /**
  * Get character set based on options
  * @param options Generator options
@@ -27,10 +43,7 @@ const getCharacterSet = (options: GeneratorOptions): string => {
   if (options.includeUppercase) {
     let upperSet = UPPERCASE;
     if (options.excludeSimilar) {
-      upperSet = upperSet.replace(
-        new RegExp(`[${SIMILAR_CHARS.uppercase}]`, 'g'),
-        ''
-      );
+      upperSet = upperSet.replace(SIMILAR_CHAR_PATTERNS.uppercase, '');
     }
     charset += upperSet;
   }
@@ -38,10 +51,7 @@ const getCharacterSet = (options: GeneratorOptions): string => {
   if (options.includeLowercase) {
     let lowerSet = LOWERCASE;
     if (options.excludeSimilar) {
-      lowerSet = lowerSet.replace(
-        new RegExp(`[${SIMILAR_CHARS.lowercase}]`, 'g'),
-        ''
-      );
+      lowerSet = lowerSet.replace(SIMILAR_CHAR_PATTERNS.lowercase, '');
     }
     charset += lowerSet;
   }
@@ -49,10 +59,7 @@ const getCharacterSet = (options: GeneratorOptions): string => {
   if (options.includeNumbers) {
     let numberSet = NUMBERS;
     if (options.excludeSimilar) {
-      numberSet = numberSet.replace(
-        new RegExp(`[${SIMILAR_CHARS.numbers}]`, 'g'),
-        ''
-      );
+      numberSet = numberSet.replace(SIMILAR_CHAR_PATTERNS.numbers, '');
     }
     charset += numberSet;
   }
@@ -60,10 +67,7 @@ const getCharacterSet = (options: GeneratorOptions): string => {
   if (options.includeSymbols) {
     let symbolSet = SYMBOLS;
     if (options.excludeSimilar) {
-      symbolSet = symbolSet.replace(
-        new RegExp(`[${SIMILAR_CHARS.symbols}]`, 'g'),
-        ''
-      );
+      symbolSet = symbolSet.replace(SIMILAR_CHAR_PATTERNS.symbols, '');
     }
     charset += symbolSet;
   }
@@ -90,10 +94,10 @@ const ensureCharacterTypes = async (
   // Ensure at least one uppercase
   if (
     options.includeUppercase &&
-    !new RegExp(`[${UPPERCASE}]`).test(password)
+    !CHARACTER_TEST_PATTERNS.uppercase.test(password)
   ) {
     const upperSet = options.excludeSimilar
-      ? UPPERCASE.replace(new RegExp(`[${SIMILAR_CHARS.uppercase}]`, 'g'), '')
+      ? UPPERCASE.replace(SIMILAR_CHAR_PATTERNS.uppercase, '')
       : UPPERCASE;
     const randomChar =
       upperSet[await getSecureRandomInt(0, upperSet.length - 1)];
@@ -103,10 +107,10 @@ const ensureCharacterTypes = async (
   // Ensure at least one lowercase
   if (
     options.includeLowercase &&
-    !new RegExp(`[${LOWERCASE}]`).test(password)
+    !CHARACTER_TEST_PATTERNS.lowercase.test(password)
   ) {
     const lowerSet = options.excludeSimilar
-      ? LOWERCASE.replace(new RegExp(`[${SIMILAR_CHARS.lowercase}]`, 'g'), '')
+      ? LOWERCASE.replace(SIMILAR_CHAR_PATTERNS.lowercase, '')
       : LOWERCASE;
     const randomChar =
       lowerSet[await getSecureRandomInt(0, lowerSet.length - 1)];
@@ -114,9 +118,9 @@ const ensureCharacterTypes = async (
   }
 
   // Ensure at least one number
-  if (options.includeNumbers && !new RegExp(`[${NUMBERS}]`).test(password)) {
+  if (options.includeNumbers && !CHARACTER_TEST_PATTERNS.numbers.test(password)) {
     const numberSet = options.excludeSimilar
-      ? NUMBERS.replace(new RegExp(`[${SIMILAR_CHARS.numbers}]`, 'g'), '')
+      ? NUMBERS.replace(SIMILAR_CHAR_PATTERNS.numbers, '')
       : NUMBERS;
     const randomChar =
       numberSet[await getSecureRandomInt(0, numberSet.length - 1)];
@@ -124,9 +128,9 @@ const ensureCharacterTypes = async (
   }
 
   // Ensure at least one symbol
-  if (options.includeSymbols && !new RegExp(`[${SYMBOLS}]`).test(password)) {
+  if (options.includeSymbols && !CHARACTER_TEST_PATTERNS.symbols.test(password)) {
     const symbolSet = options.excludeSimilar
-      ? SYMBOLS.replace(new RegExp(`[${SIMILAR_CHARS.symbols}]`, 'g'), '')
+      ? SYMBOLS.replace(SIMILAR_CHAR_PATTERNS.symbols, '')
       : SYMBOLS;
     const randomChar =
       symbolSet[await getSecureRandomInt(0, symbolSet.length - 1)];

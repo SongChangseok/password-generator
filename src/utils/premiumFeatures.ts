@@ -1,6 +1,6 @@
 /**
  * Premium Features Management - v1.2 Phase 3
- * 
+ *
  * Manages free/premium version features and limitations.
  * In future versions, this will integrate with in-app purchases.
  */
@@ -53,12 +53,14 @@ interface PurchaseInfo {
 export const getPremiumStatus = async (): Promise<PremiumStatus> => {
   try {
     const statusData = await SecureStore.getItemAsync(PREMIUM_STATUS_KEY);
-    
+
     if (statusData) {
       const status = JSON.parse(statusData);
       return {
         ...status,
-        purchaseDate: status.purchaseDate ? new Date(status.purchaseDate) : undefined,
+        purchaseDate: status.purchaseDate
+          ? new Date(status.purchaseDate)
+          : undefined,
         expiryDate: status.expiryDate ? new Date(status.expiryDate) : undefined,
       };
     }
@@ -94,7 +96,10 @@ export const setPremiumStatus = async (
     await SecureStore.setItemAsync(PREMIUM_STATUS_KEY, JSON.stringify(status));
 
     if (purchaseInfo) {
-      await SecureStore.setItemAsync(PREMIUM_PURCHASE_KEY, JSON.stringify(purchaseInfo));
+      await SecureStore.setItemAsync(
+        PREMIUM_PURCHASE_KEY,
+        JSON.stringify(purchaseInfo)
+      );
     }
   } catch (error) {
     console.error('Error setting premium status:', error);
@@ -105,9 +110,11 @@ export const setPremiumStatus = async (
 /**
  * Check if specific feature is available
  */
-export const isFeatureAvailable = async (feature: keyof typeof PREMIUM_FEATURES): Promise<boolean> => {
+export const isFeatureAvailable = async (
+  feature: keyof typeof PREMIUM_FEATURES
+): Promise<boolean> => {
   const status = await getPremiumStatus();
-  
+
   if (status.isPremium) {
     return true;
   }
@@ -133,10 +140,14 @@ export const isFeatureAvailable = async (feature: keyof typeof PREMIUM_FEATURES)
  */
 export const getStorageLimits = async () => {
   const status = await getPremiumStatus();
-  
+
   return {
-    maxPasswords: status.isPremium ? Number.MAX_SAFE_INTEGER : FREE_VERSION_LIMITS.MAX_SAVED_PASSWORDS,
-    maxTemplates: status.isPremium ? Number.MAX_SAFE_INTEGER : FREE_VERSION_LIMITS.MAX_TEMPLATES,
+    maxPasswords: status.isPremium
+      ? Number.MAX_SAFE_INTEGER
+      : FREE_VERSION_LIMITS.MAX_SAVED_PASSWORDS,
+    maxTemplates: status.isPremium
+      ? Number.MAX_SAFE_INTEGER
+      : FREE_VERSION_LIMITS.MAX_TEMPLATES,
     isPremium: status.isPremium,
   };
 };
@@ -144,15 +155,19 @@ export const getStorageLimits = async () => {
 /**
  * Check if user has reached storage limit
  */
-export const checkStorageLimit = async (currentCount: number): Promise<{
+export const checkStorageLimit = async (
+  currentCount: number
+): Promise<{
   canSave: boolean;
   isNearLimit: boolean;
   remainingSlots: number;
   maxSlots: number;
 }> => {
   const limits = await getStorageLimits();
-  const remainingSlots = limits.isPremium ? Number.MAX_SAFE_INTEGER : limits.maxPasswords - currentCount;
-  
+  const remainingSlots = limits.isPremium
+    ? Number.MAX_SAFE_INTEGER
+    : limits.maxPasswords - currentCount;
+
   return {
     canSave: currentCount < limits.maxPasswords,
     isNearLimit: !limits.isPremium && remainingSlots <= 2,
@@ -210,35 +225,38 @@ export const resetToFreeVersion = async (): Promise<void> => {
 /**
  * Get premium features list for display
  */
-export const getPremiumFeaturesList = (): Array<{ title: string; description: string }> => {
+export const getPremiumFeaturesList = (): {
+  title: string;
+  description: string;
+}[] => {
   return [
     {
       title: 'Unlimited Password Storage',
-      description: 'Save as many passwords as you need without limits'
+      description: 'Save as many passwords as you need without limits',
     },
     {
       title: 'Advanced Search & Filter',
-      description: 'Find passwords quickly with powerful search options'
+      description: 'Find passwords quickly with powerful search options',
     },
     {
       title: 'Custom Templates',
-      description: 'Create your own password generation templates'
+      description: 'Create your own password generation templates',
     },
     {
       title: 'Export & Import',
-      description: 'Backup and restore your password collection'
+      description: 'Backup and restore your password collection',
     },
     {
       title: 'Premium Templates',
-      description: 'Access specialized templates for different use cases'
+      description: 'Access specialized templates for different use cases',
     },
     {
       title: 'Ad-Free Experience',
-      description: 'Remove all advertisements from the app'
+      description: 'Remove all advertisements from the app',
     },
     {
       title: 'Priority Support',
-      description: 'Get faster response to your questions and issues'
+      description: 'Get faster response to your questions and issues',
     },
   ];
 };
@@ -254,10 +272,10 @@ export const getFeatureComparison = () => {
       'Strength Analysis': true,
       'Saved Passwords': `${FREE_VERSION_LIMITS.MAX_SAVED_PASSWORDS} passwords`,
       'Search & Filter': 'Basic',
-      'Templates': `${FREE_VERSION_LIMITS.MAX_TEMPLATES} templates`,
+      Templates: `${FREE_VERSION_LIMITS.MAX_TEMPLATES} templates`,
       'Export/Import': false,
-      'Ads': true,
-      'Support': 'Community',
+      Ads: true,
+      Support: 'Community',
     },
     premium: {
       'Password Generation': true,
@@ -265,10 +283,10 @@ export const getFeatureComparison = () => {
       'Strength Analysis': true,
       'Saved Passwords': 'Unlimited',
       'Search & Filter': 'Advanced',
-      'Templates': 'Unlimited + Custom',
+      Templates: 'Unlimited + Custom',
       'Export/Import': true,
-      'Ads': false,
-      'Support': 'Priority',
+      Ads: false,
+      Support: 'Priority',
     },
   };
 };
