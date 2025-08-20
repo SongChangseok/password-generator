@@ -11,7 +11,8 @@ describe('Performance Benchmarks', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const times: number[] = [];
@@ -59,7 +60,8 @@ describe('Performance Benchmarks', () => {
           includeNumbers: true,
           includeSymbols: true,
           excludeSimilar: false,
-          includeAmbiguous: true,
+          preventRepeating: false,
+        readableFormat: false,
         };
 
         const times: number[] = [];
@@ -96,7 +98,8 @@ describe('Performance Benchmarks', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const initialMemory = process.memoryUsage().heapUsed / 1024 / 1024; // MB
@@ -139,7 +142,8 @@ describe('Performance Benchmarks', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const startTime = performance.now();
@@ -182,7 +186,8 @@ describe('Performance Benchmarks', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const concurrency = 20;

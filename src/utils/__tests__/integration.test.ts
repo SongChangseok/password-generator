@@ -57,6 +57,7 @@ describe('Password Generation Integration', () => {
         includeSymbols: false,
         excludeSimilar: true,
         preventRepeating: true,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -122,6 +123,7 @@ describe('Password Generation Integration', () => {
         includeSymbols: false,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       });
       expect(singleType.password).toHaveLength(12);
       expect(/^[a-z]+$/.test(singleType.password)).toBe(true);
@@ -139,6 +141,7 @@ describe('Password Generation Integration', () => {
         includeSymbols: true,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       });
 
       // Low entropy configuration
@@ -150,6 +153,7 @@ describe('Password Generation Integration', () => {
         includeSymbols: false,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       });
 
       expect(highEntropy.entropy).toBeGreaterThan(lowEntropy.entropy);
@@ -168,6 +172,7 @@ describe('Password Generation Integration', () => {
         includeSymbols: false,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       });
 
       // Strong configuration
@@ -179,6 +184,7 @@ describe('Password Generation Integration', () => {
         includeSymbols: true,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       });
 
       expect(strong.strength.score).toBeGreaterThan(weak.strength.score);
@@ -212,6 +218,7 @@ describe('Password Generation Integration', () => {
           includeSymbols: false,
           excludeSimilar: false,
           preventRepeating: false,
+          readableFormat: false,
         })
       ).rejects.toThrow('At least one character type must be selected');
     });

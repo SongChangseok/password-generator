@@ -11,7 +11,8 @@ describe('Memory and Resource Management Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Record initial memory
@@ -58,7 +59,8 @@ describe('Memory and Resource Management Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const iterations = 1000;
@@ -92,7 +94,8 @@ describe('Memory and Resource Management Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const initialMemory = process.memoryUsage().heapUsed / 1024 / 1024;
@@ -128,7 +131,8 @@ describe('Memory and Resource Management Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Monitor heap objects before operations
@@ -161,7 +165,8 @@ describe('Memory and Resource Management Tests', () => {
         includeNumbers: true,
         includeSymbols: false,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       let peakMemory = 0;
@@ -194,7 +199,8 @@ describe('Memory and Resource Management Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: true,
-        includeAmbiguous: false,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Create some memory pressure

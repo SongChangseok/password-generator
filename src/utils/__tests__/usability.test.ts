@@ -25,7 +25,8 @@ describe('Usability Tests (UX Perspective)', () => {
           includeNumbers: true,
           includeSymbols: true,
           excludeSimilar: false,
-          includeAmbiguous: true,
+          preventRepeating: false,
+          readableFormat: false,
         };
 
         await expect(generateSecurePassword(options)).rejects.toThrow(
@@ -42,7 +43,8 @@ describe('Usability Tests (UX Perspective)', () => {
         includeNumbers: false,
         includeSymbols: false,
         excludeSimilar: false,
-        includeAmbiguous: false,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       await expect(generateSecurePassword(options)).rejects.toThrow(
@@ -111,7 +113,8 @@ describe('Usability Tests (UX Perspective)', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const passwords: string[] = [];
@@ -155,7 +158,8 @@ describe('Usability Tests (UX Perspective)', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const results = [];
@@ -183,7 +187,8 @@ describe('Usability Tests (UX Perspective)', () => {
         includeNumbers: true,
         includeSymbols: false,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const result1 = await generateSecurePassword(noSymbolsOptions);
@@ -198,7 +203,8 @@ describe('Usability Tests (UX Perspective)', () => {
         includeNumbers: true,
         includeSymbols: false,
         excludeSimilar: true,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const result2 = await generateSecurePassword(noSimilarOptions);
@@ -216,7 +222,8 @@ describe('Usability Tests (UX Perspective)', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const times: number[] = [];
@@ -252,7 +259,8 @@ describe('Usability Tests (UX Perspective)', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Simulate rapid user interactions (clicking generate button quickly)
@@ -286,7 +294,8 @@ describe('Usability Tests (UX Perspective)', () => {
             includeNumbers: false,
             includeSymbols: false,
             excludeSimilar: false,
-            includeAmbiguous: true,
+            preventRepeating: false,
+          readableFormat: false,
           },
           expectedErrorPattern: /length must be between/i,
         },
@@ -298,7 +307,8 @@ describe('Usability Tests (UX Perspective)', () => {
             includeNumbers: false,
             includeSymbols: false,
             excludeSimilar: false,
-            includeAmbiguous: true,
+            preventRepeating: false,
+          readableFormat: false,
           },
           expectedErrorPattern: /length must be between/i,
         },
@@ -309,8 +319,8 @@ describe('Usability Tests (UX Perspective)', () => {
           await generateSecurePassword(testCase.options as GeneratorOptions);
           fail('Should have thrown an error');
         } catch (error) {
-          expect(error.message).toMatch(testCase.expectedErrorPattern);
-          expect(error.message.length).toBeGreaterThan(10); // Descriptive enough
+          expect((error as Error).message).toMatch(testCase.expectedErrorPattern);
+          expect((error as Error).message.length).toBeGreaterThan(10); // Descriptive enough
         }
       }
     });
@@ -324,7 +334,8 @@ describe('Usability Tests (UX Perspective)', () => {
         includeNumbers: false,
         includeSymbols: false,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(minimalOptions);

@@ -21,7 +21,8 @@ describe('Crash Scenario Tests', () => {
           includeNumbers: true,
           includeSymbols: true,
           excludeSimilar: false,
-          includeAmbiguous: true,
+          preventRepeating: false,
+          readableFormat: false,
         };
 
         try {
@@ -33,8 +34,8 @@ describe('Crash Scenario Tests', () => {
           expect(result.password.length).toBeGreaterThan(0);
         } catch (error) {
           // If it throws, it should be a controlled error, not a crash
-          expect(error).toBeInstanceOf(Error);
-          expect(error.message).toBeDefined();
+          expect(error as Error).toBeInstanceOf(Error);
+          expect((error as Error).message).toBeDefined();
         }
       }
     });
@@ -47,7 +48,8 @@ describe('Crash Scenario Tests', () => {
         includeNumbers: false,
         includeSymbols: false,
         excludeSimilar: false,
-        includeAmbiguous: false,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       try {
@@ -59,8 +61,8 @@ describe('Crash Scenario Tests', () => {
           expect(typeof result.password).toBe('string');
         }
       } catch (error) {
-        expect(error).toBeInstanceOf(Error);
-        expect(error.message).toContain('character');
+        expect(error as Error).toBeInstanceOf(Error);
+        expect((error as Error).message).toContain('character');
       }
     });
 
@@ -85,7 +87,7 @@ describe('Crash Scenario Tests', () => {
           }
         } catch (error) {
           // Should be controlled error, not crash
-          expect(error).toBeInstanceOf(Error);
+          expect(error as Error).toBeInstanceOf(Error);
         }
       }
     });
@@ -100,7 +102,8 @@ describe('Crash Scenario Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Rapid fire 1000 calls
@@ -118,16 +121,18 @@ describe('Crash Scenario Tests', () => {
       expect(results).toHaveLength(1000);
 
       // Count successful vs error results
-      const successCount = results.filter((r) => r.password).length;
+      const successCount = results.filter((r) => 'password' in r).length;
 
       // At least 90% should succeed
       expect(successCount).toBeGreaterThan(900);
 
       // Any errors should be controlled
       results
-        .filter((r) => r.error)
+        .filter((r) => 'error' in r)
         .forEach((result) => {
-          expect(result.error).toBeInstanceOf(Error);
+          if ('error' in result) {
+            expect(result.error).toBeInstanceOf(Error);
+          }
         });
     });
 
@@ -139,7 +144,8 @@ describe('Crash Scenario Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: true,
-        includeAmbiguous: false,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Create multiple large password generations simultaneously
@@ -152,12 +158,14 @@ describe('Crash Scenario Tests', () => {
       // Should complete without crashing
       expect(results).toHaveLength(100);
 
-      const successfulResults = results.filter((r) => r.password);
+      const successfulResults = results.filter((r) => 'password' in r);
       expect(successfulResults.length).toBeGreaterThan(90);
 
       successfulResults.forEach((result) => {
-        expect(result.password).toHaveLength(32);
-        expect(result.strength.score).toBeGreaterThanOrEqual(0);
+        if ('password' in result) {
+          expect(result.password).toHaveLength(32);
+          expect(result.strength.score).toBeGreaterThanOrEqual(0);
+        }
       });
     });
 
@@ -169,7 +177,8 @@ describe('Crash Scenario Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Create artificial memory pressure
@@ -196,7 +205,7 @@ describe('Crash Scenario Tests', () => {
       memoryPressure.length = 0;
 
       // Should have some successful results
-      const successCount = results.filter((r) => r.password).length;
+      const successCount = results.filter((r) => 'password' in r).length;
       expect(successCount).toBeGreaterThan(0);
     });
   });
@@ -210,7 +219,8 @@ describe('Crash Scenario Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Create 200 concurrent operations
@@ -231,7 +241,7 @@ describe('Crash Scenario Tests', () => {
       let successCount = 0;
 
       results.forEach((result, index) => {
-        if (result.password) {
+        if ('password' in result) {
           successCount++;
           const expectedLength = 8 + (index % 24);
           expect(result.password.length).toBe(expectedLength);
@@ -241,7 +251,7 @@ describe('Crash Scenario Tests', () => {
             passwordsByLength.set(expectedLength, new Set());
           }
           passwordsByLength.get(expectedLength)!.add(result.password);
-        } else if (result.error) {
+        } else if ('error' in result) {
           expect(result.error).toBeInstanceOf(Error);
         }
       });
@@ -253,7 +263,7 @@ describe('Crash Scenario Tests', () => {
       passwordsByLength.forEach((passwords, length) => {
         const passwordCount = Array.from(results).filter((_, index) => {
           const expectedLength = 8 + (index % 24);
-          return expectedLength === length && results[index].password;
+          return expectedLength === length && 'password' in results[index];
         }).length;
 
         // All passwords of the same length should be unique
@@ -297,7 +307,8 @@ describe('Crash Scenario Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Test should work regardless of platform
@@ -317,7 +328,8 @@ describe('Crash Scenario Tests', () => {
         includeNumbers: true,
         includeSymbols: false,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Simulate component unmounting during password generation

@@ -10,15 +10,18 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Colors } from '../utils/colors';
+import { getPasswordDisplayText } from '../utils/passwordFormatter';
 
 interface PasswordDisplayProps {
   password: string;
+  readableFormat?: boolean;
   onCopy?: () => void;
   style?: any;
 }
 
 export const PasswordDisplay: React.FC<PasswordDisplayProps> = ({
   password,
+  readableFormat = false,
   onCopy,
   style,
 }) => {
@@ -55,7 +58,7 @@ export const PasswordDisplay: React.FC<PasswordDisplayProps> = ({
         activeOpacity={0.7}
       >
         <Text style={styles.password} selectable>
-          {password || 'Tap "Generate" to create a password'}
+          {password ? getPasswordDisplayText(password, readableFormat) : 'Tap "Generate" to create a password'}
         </Text>
         <View style={styles.copyHint}>
           <Text style={styles.copyHintText}>Tap to copy</Text>

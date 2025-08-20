@@ -49,6 +49,11 @@ const advancedOptions: OptionItem[] = [
     label: 'Prevent Repeating Characters',
     description: 'No consecutive identical characters',
   },
+  {
+    key: 'readableFormat',
+    label: 'Readable Format',
+    description: 'Display with 4-character groups',
+  },
 ];
 
 export const CharacterTypeOptions: React.FC<CharacterTypeOptionsProps> = ({

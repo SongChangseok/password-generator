@@ -54,6 +54,7 @@ describe('passwordGenerator', () => {
         includeSymbols: false,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       };
 
       await expect(generateSecurePassword(options)).rejects.toThrow(
@@ -70,6 +71,7 @@ describe('passwordGenerator', () => {
         includeSymbols: false,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -87,6 +89,7 @@ describe('passwordGenerator', () => {
         includeSymbols: false,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -104,6 +107,7 @@ describe('passwordGenerator', () => {
         includeSymbols: false,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -120,6 +124,7 @@ describe('passwordGenerator', () => {
         includeSymbols: true,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -138,6 +143,7 @@ describe('passwordGenerator', () => {
         includeSymbols: true,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -158,6 +164,7 @@ describe('passwordGenerator', () => {
         includeSymbols: true,
         excludeSimilar: true,
         preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -232,6 +239,7 @@ describe('passwordGenerator', () => {
         includeSymbols: false,
         excludeSimilar: false,
         preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(lowercaseOnly);

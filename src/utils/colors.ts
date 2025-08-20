@@ -17,6 +17,10 @@ export const Colors = {
   warningLight: '#EF4444',
   warningDark: '#B91C1C',
 
+  // Alias for compatibility
+  danger: '#DC2626', // Same as warning
+  gray: '#6B7280', // Same as gray500
+
   // Neutral Colors
   white: '#FFFFFF',
   black: '#000000',

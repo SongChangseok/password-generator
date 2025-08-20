@@ -60,7 +60,7 @@ describe('Security Integration Tests', () => {
       ]);
       mockLocalAuth.authenticateAsync.mockResolvedValue({
         success: false,
-        error: 'Authentication failed',
+        error: 'authentication_failed',
       });
 
       const result = await authenticateUser();

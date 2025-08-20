@@ -238,4 +238,5 @@ export const DEFAULT_OPTIONS: GeneratorOptions = {
   includeSymbols: true,
   excludeSimilar: false,
   preventRepeating: false,
+  readableFormat: false,
 };

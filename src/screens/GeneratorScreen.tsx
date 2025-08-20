@@ -12,6 +12,7 @@ import { PasswordStrengthBar } from '../components/PasswordStrengthBar';
 import { LengthSlider } from '../components/LengthSlider';
 import { CharacterTypeOptions } from '../components/CharacterTypeOptions';
 import { GenerateButton } from '../components/GenerateButton';
+import { TemplateSelector } from '../components/TemplateSelector';
 
 export default function GeneratorScreen() {
   const [options, setOptions] = useState<GeneratorOptions>(DEFAULT_OPTIONS);
@@ -81,6 +82,7 @@ export default function GeneratorScreen() {
       >
         <PasswordDisplay
           password={generatedPassword?.password || ''}
+          readableFormat={options.readableFormat}
           onCopy={handleCopyPassword}
           style={styles.section}
         />
@@ -91,6 +93,12 @@ export default function GeneratorScreen() {
             style={styles.section}
           />
         )}
+
+        <TemplateSelector
+          currentOptions={options}
+          onTemplateSelect={handleOptionsChange}
+          style={styles.section}
+        />
 
         <LengthSlider
           value={options.length}

@@ -11,7 +11,8 @@ describe('Comprehensive Integration Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const startTime = Date.now();
@@ -70,7 +71,8 @@ describe('Comprehensive Integration Tests', () => {
           length: 12,
           ...testCase,
           excludeSimilar: false,
-          includeAmbiguous: true,
+          preventRepeating: false,
+        readableFormat: false,
         };
 
         const result = await generateSecurePassword(options);
@@ -87,7 +89,8 @@ describe('Comprehensive Integration Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const passwords: string[] = [];
@@ -121,7 +124,8 @@ describe('Comprehensive Integration Tests', () => {
         includeNumbers: true,
         includeSymbols: false,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -137,7 +141,8 @@ describe('Comprehensive Integration Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -153,7 +158,8 @@ describe('Comprehensive Integration Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const startMemory = process.memoryUsage().heapUsed;
@@ -190,7 +196,8 @@ describe('Comprehensive Integration Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const result = await generateSecurePassword(options);
@@ -211,7 +218,8 @@ describe('Comprehensive Integration Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: true,
-        includeAmbiguous: false,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       const performanceTimes: number[] = [];
@@ -248,7 +256,8 @@ describe('Comprehensive Integration Tests', () => {
         includeNumbers: true,
         includeSymbols: true,
         excludeSimilar: false,
-        includeAmbiguous: true,
+        preventRepeating: false,
+        readableFormat: false,
       };
 
       // Test multiple times to ensure consistency
