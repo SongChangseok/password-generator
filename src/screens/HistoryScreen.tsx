@@ -61,11 +61,11 @@ export default function HistoryScreen() {
 
       // Load storage stats
       const stats = await getStorageStats();
-      const isPremium = await getPremiumStatus();
+      const premiumStatus = await getPremiumStatus();
       setStorageStats({
         totalPasswords: passwords.length,
-        isPremium,
-        limit: isPremium ? 1000 : 10,
+        isPremium: premiumStatus.isPremium,
+        limit: premiumStatus.isPremium ? 1000 : 10,
       });
     } catch (error) {
       console.error('Failed to load passwords:', error);
@@ -134,12 +134,13 @@ export default function HistoryScreen() {
   );
 
   const renderPasswordItem = ({ item }: { item: SavedPassword }) => (
-    <PasswordCard
-      password={item}
-      onPress={() => handlePasswordPress(item)}
-      onDelete={() => handlePasswordDelete(item.id)}
-      style={styles.passwordCard}
-    />
+    <View style={styles.passwordCard}>
+      <PasswordCard
+        password={item}
+        onPress={() => handlePasswordPress(item)}
+        onDelete={() => handlePasswordDelete(item.id)}
+      />
+    </View>
   );
 
   const renderHeader = () => (
@@ -155,8 +156,7 @@ export default function HistoryScreen() {
       )}
 
       <SearchBar
-        value={searchQuery}
-        onChangeText={handleSearch}
+        onSearch={handleSearch}
         placeholder="Search passwords..."
         style={styles.searchBar}
       />

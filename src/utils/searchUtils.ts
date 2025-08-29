@@ -1,7 +1,8 @@
 import { SavedPassword } from './types';
 
 export interface SearchResult {
-  passwords: SavedPassword[];
+  results: SavedPassword[];
+  passwords: SavedPassword[]; // Alias for backward compatibility
   matchCount: number;
   searchTime: number;
 }
@@ -28,6 +29,7 @@ export const searchPasswords = (
   if (!query.trim()) {
     const endTime = performance.now();
     return {
+      results: passwords,
       passwords,
       matchCount: passwords.length,
       searchTime: endTime - startTime,
@@ -82,6 +84,7 @@ export const searchPasswords = (
   const endTime = performance.now();
 
   return {
+    results: filteredPasswords,
     passwords: filteredPasswords,
     matchCount: filteredPasswords.length,
     searchTime: endTime - startTime,
@@ -171,6 +174,7 @@ export const advancedSearch = (
   const endTime = performance.now();
 
   return {
+    results: filteredPasswords,
     passwords: filteredPasswords,
     matchCount: filteredPasswords.length,
     searchTime: endTime - startTime,

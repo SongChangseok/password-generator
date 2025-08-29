@@ -311,6 +311,34 @@ export const passwordStorage: PasswordStorage = {
     const passwords = await getAllPasswords();
     return passwords.length;
   },
+
+  /**
+   * Get all passwords (alias for getAll)
+   */
+  getAllPasswords: async (): Promise<SavedPassword[]> => {
+    return passwordStorage.getAll();
+  },
+
+  /**
+   * Sort passwords by specified order
+   */
+  sortPasswords: (passwords: SavedPassword[], sortOrder: SortOrder): SavedPassword[] => {
+    return sortPasswords(passwords, sortOrder);
+  },
+
+  /**
+   * Delete password by ID
+   */
+  deletePassword: async (id: string): Promise<void> => {
+    const passwords = await getAllPasswords();
+    const filteredPasswords = passwords.filter(p => p.id !== id);
+    
+    if (passwords.length === filteredPasswords.length) {
+      throw new Error('Password not found');
+    }
+    
+    await saveAllPasswords(filteredPasswords);
+  },
 };
 
 /**

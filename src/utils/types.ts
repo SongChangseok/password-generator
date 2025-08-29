@@ -46,11 +46,14 @@ export interface SavedPassword {
 export interface PasswordStorage {
   save: (password: SavedPassword) => Promise<void>;
   getAll: () => Promise<SavedPassword[]>;
+  getAllPasswords: () => Promise<SavedPassword[]>; // Alias for getAll
   getById: (id: string) => Promise<SavedPassword | null>;
   update: (id: string, updates: Partial<SavedPassword>) => Promise<void>;
   delete: (id: string) => Promise<void>;
   deleteAll: () => Promise<void>;
+  deletePassword: (id: string) => Promise<void>; // Alias for delete
   getCount: () => Promise<number>;
+  sortPasswords: (passwords: SavedPassword[], sortOrder: SortOrder) => SavedPassword[];
 }
 
 // Password list sorting options
