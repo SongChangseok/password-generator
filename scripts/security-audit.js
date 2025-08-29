@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Security Audit Runner - Phase 4 Week 16
- * 
+ *
  * Comprehensive security audit script for password generator app
  */
 
@@ -14,7 +14,9 @@ console.log('🔒 Starting comprehensive security audit...\n');
 // 1. NPM Audit
 console.log('📦 Running npm audit...');
 try {
-  const npmAuditResult = execSync('npm audit --audit-level=high', { encoding: 'utf8' });
+  const npmAuditResult = execSync('npm audit --audit-level=high', {
+    encoding: 'utf8',
+  });
   console.log('✅ No high-severity vulnerabilities found in dependencies');
 } catch (error) {
   console.error('❌ NPM audit found vulnerabilities:');
@@ -29,13 +31,13 @@ try {
   console.log('✅ ESLint scan completed');
 } catch (error) {
   const output = error.stdout || error.stderr || '';
-  securityIssues = output.split('\n').filter(line => 
-    line.includes('security/') || line.includes('detect-')
-  );
-  
+  securityIssues = output
+    .split('\n')
+    .filter((line) => line.includes('security/') || line.includes('detect-'));
+
   if (securityIssues.length > 0) {
     console.log('⚠️  Security issues found:');
-    securityIssues.forEach(issue => console.log(`   ${issue}`));
+    securityIssues.forEach((issue) => console.log(`   ${issue}`));
   } else {
     console.log('✅ No security issues found in ESLint scan');
   }
@@ -55,34 +57,37 @@ function scanFileForSecrets(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
     const findings = [];
-    
+
     secretPatterns.forEach((pattern, index) => {
       const matches = content.match(pattern);
       if (matches) {
         findings.push({
           pattern: index,
           matches: matches.slice(0, 3), // Limit output
-          file: filePath
+          file: filePath,
         });
       }
     });
-    
+
     return findings;
   } catch (error) {
     return [];
   }
 }
 
-function scanDirectory(dir, excludeDirs = ['node_modules', '.git', 'build', 'dist']) {
+function scanDirectory(
+  dir,
+  excludeDirs = ['node_modules', '.git', 'build', 'dist']
+) {
   const findings = [];
-  
+
   try {
     const items = fs.readdirSync(dir);
-    
+
     for (const item of items) {
       const fullPath = path.join(dir, item);
       const stat = fs.statSync(fullPath);
-      
+
       if (stat.isDirectory() && !excludeDirs.includes(item)) {
         findings.push(...scanDirectory(fullPath, excludeDirs));
       } else if (stat.isFile() && /\.(js|jsx|ts|tsx|json)$/.test(item)) {
@@ -93,7 +98,7 @@ function scanDirectory(dir, excludeDirs = ['node_modules', '.git', 'build', 'dis
   } catch (error) {
     // Ignore permission errors
   }
-  
+
   return findings;
 }
 
@@ -102,8 +107,10 @@ if (secretFindings.length === 0) {
   console.log('✅ No hardcoded secrets detected');
 } else {
   console.log('⚠️  Potential secrets found:');
-  secretFindings.forEach(finding => {
-    console.log(`   ${finding.file}: ${finding.matches[0].substring(0, 20)}...`);
+  secretFindings.forEach((finding) => {
+    console.log(
+      `   ${finding.file}: ${finding.matches[0].substring(0, 20)}...`
+    );
   });
 }
 
@@ -113,16 +120,18 @@ const criticalFiles = [
   'package.json',
   'package-lock.json',
   'app.config.js',
-  'eas.json'
+  'eas.json',
 ];
 
 let permissionIssues = 0;
-criticalFiles.forEach(file => {
+criticalFiles.forEach((file) => {
   try {
     const stats = fs.statSync(file);
     const mode = stats.mode & parseInt('777', 8);
     if (mode > parseInt('644', 8)) {
-      console.log(`⚠️  ${file} has overly permissive permissions: ${mode.toString(8)}`);
+      console.log(
+        `⚠️  ${file} has overly permissive permissions: ${mode.toString(8)}`
+      );
       permissionIssues++;
     }
   } catch (error) {
@@ -154,17 +163,20 @@ const auditReport = {
     eslint: securityIssues?.length > 0 ? 'WARNINGS' : 'PASS',
     secrets: secretFindings.length === 0 ? 'PASS' : 'FAIL',
     permissions: permissionIssues === 0 ? 'PASS' : 'WARNINGS',
-    typescript: 'PASS'
+    typescript: 'PASS',
   },
   recommendations: [
     'Continue monitoring dependencies with npm audit',
     'Address remaining ESLint security warnings',
     'Implement automated security scanning in CI/CD',
-    'Consider external penetration testing for production'
-  ]
+    'Consider external penetration testing for production',
+  ],
 };
 
-fs.writeFileSync('security-audit-report.json', JSON.stringify(auditReport, null, 2));
+fs.writeFileSync(
+  'security-audit-report.json',
+  JSON.stringify(auditReport, null, 2)
+);
 console.log('✅ Security audit report saved to security-audit-report.json');
 
 console.log('\n🎯 Security Audit Summary:');

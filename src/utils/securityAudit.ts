@@ -1,12 +1,17 @@
 /**
  * Security Audit Report Generator - Phase 4 Week 16
- * 
+ *
  * Generates comprehensive security audit reports and maintains security standards
  */
 
 export interface SecurityIssue {
   severity: 'critical' | 'high' | 'medium' | 'low';
-  category: 'object-injection' | 'regex' | 'hardcoded-secret' | 'input-validation' | 'other';
+  category:
+    | 'object-injection'
+    | 'regex'
+    | 'hardcoded-secret'
+    | 'input-validation'
+    | 'other';
   file: string;
   line: number;
   description: string;
@@ -36,16 +41,18 @@ export interface SecurityAuditReport {
 export const KNOWN_SECURITY_ISSUES: SecurityIssue[] = [
   // RESOLVED: RegExp Constructor vulnerabilities - Fixed by using pre-compiled patterns
   // RESOLVED: src/utils/passwordGenerator.ts lines 31, 42, etc. - All dynamic RegExp replaced with static patterns
-  
+
   // REMAINING: Object injection vulnerabilities (medium severity)
   {
     severity: 'medium',
     category: 'object-injection',
     file: 'src/components/CharacterTypeOptions.tsx',
     line: 66,
-    description: 'Object Injection Sink - Fixed with type validation but flagged by linter',
-    recommendation: 'Already mitigated with type checking. Consider ESLint disable for safe usage',
-    cweId: 'CWE-94'
+    description:
+      'Object Injection Sink - Fixed with type validation but flagged by linter',
+    recommendation:
+      'Already mitigated with type checking. Consider ESLint disable for safe usage',
+    cweId: 'CWE-94',
   },
   {
     severity: 'medium',
@@ -54,16 +61,17 @@ export const KNOWN_SECURITY_ISSUES: SecurityIssue[] = [
     line: 59,
     description: 'Object Injection Sink - String mapping for UI labels',
     recommendation: 'Low risk - fixed mapping with known keys only',
-    cweId: 'CWE-94'
+    cweId: 'CWE-94',
   },
   {
     severity: 'low',
     category: 'object-injection',
     file: 'src/utils/secureRandom.ts',
     line: 21,
-    description: 'Object Injection Sink - Type manipulation for cryptographic operations',
+    description:
+      'Object Injection Sink - Type manipulation for cryptographic operations',
     recommendation: 'Acceptable risk - well-defined cryptographic API usage',
-    cweId: 'CWE-94'
+    cweId: 'CWE-94',
   },
   {
     severity: 'medium',
@@ -71,9 +79,10 @@ export const KNOWN_SECURITY_ISSUES: SecurityIssue[] = [
     file: 'src/utils/searchUtils.ts',
     line: 194,
     description: 'Non-literal RegExp Constructor in search functionality',
-    recommendation: 'Input sanitization implemented, consider pre-compiled patterns',
-    cweId: 'CWE-400'
-  }
+    recommendation:
+      'Input sanitization implemented, consider pre-compiled patterns',
+    cweId: 'CWE-400',
+  },
 ];
 
 /**
@@ -84,7 +93,7 @@ export const SECURITY_FIXES_COMPLETED = [
   'Added type-safe property access validation in CharacterTypeOptions',
   'Implemented input validation for boolean toggles',
   'Enhanced ESLint security rules and configured proper patterns',
-  'Created comprehensive security audit infrastructure'
+  'Created comprehensive security audit infrastructure',
 ];
 
 /**
@@ -92,11 +101,11 @@ export const SECURITY_FIXES_COMPLETED = [
  */
 export function generateSecurityAuditReport(): SecurityAuditReport {
   const issues = KNOWN_SECURITY_ISSUES;
-  
-  const criticalCount = issues.filter(i => i.severity === 'critical').length;
-  const highCount = issues.filter(i => i.severity === 'high').length;
-  const mediumCount = issues.filter(i => i.severity === 'medium').length;
-  const lowCount = issues.filter(i => i.severity === 'low').length;
+
+  const criticalCount = issues.filter((i) => i.severity === 'critical').length;
+  const highCount = issues.filter((i) => i.severity === 'high').length;
+  const mediumCount = issues.filter((i) => i.severity === 'medium').length;
+  const lowCount = issues.filter((i) => i.severity === 'low').length;
 
   return {
     timestamp: new Date(),
@@ -110,7 +119,7 @@ export function generateSecurityAuditReport(): SecurityAuditReport {
       owaspMasvs: criticalCount === 0 && highCount === 0, // Must have no critical/high issues
       gdprCompliant: true, // App is GDPR compliant by design (local storage only)
       nistCompliant: true, // Using NIST-approved cryptography (AES-256, SHA-256)
-    }
+    },
   };
 }
 
@@ -121,18 +130,18 @@ export const SECURITY_REMEDIATION_PLAN = {
   immediate: [
     'Fix all object injection vulnerabilities by implementing type-safe property access',
     'Replace dynamic RegExp constructors with pre-compiled patterns',
-    'Add input validation for all user-provided data'
+    'Add input validation for all user-provided data',
   ],
   shortTerm: [
     'Implement comprehensive input sanitization',
     'Add rate limiting for password generation',
-    'Enhance error handling to prevent information disclosure'
+    'Enhance error handling to prevent information disclosure',
   ],
   longTerm: [
     'Regular security code reviews',
     'Automated security testing in CI/CD',
-    'External penetration testing'
-  ]
+    'External penetration testing',
+  ],
 };
 
 /**

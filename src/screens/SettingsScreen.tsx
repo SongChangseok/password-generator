@@ -36,6 +36,8 @@ import {
   type AppLockSettings,
 } from '@/utils/appLock';
 import { SecurityGuide } from '@/components/SecurityGuide';
+import { iapManager } from '@/utils/inAppPurchase';
+import { adManager } from '@/utils/adManager';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -50,6 +52,8 @@ export default function SettingsScreen() {
   const [pinSettings, setPinSettings] = useState<PinSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [showSecurityGuide, setShowSecurityGuide] = useState(false);
+  const [isAdFree, setIsAdFree] = useState(false);
+  const [purchaseDate, setPurchaseDate] = useState<Date | null>(null);
 
   const loadSettings = useCallback(async () => {
     try {
@@ -66,6 +70,16 @@ export default function SettingsScreen() {
       // Load PIN settings
       const pinSettings = await getPinSettings();
       setPinSettings(pinSettings);
+
+      // Load ad-free status
+      const adFreeStatus = await iapManager.isAdFreePurchased();
+      setIsAdFree(adFreeStatus);
+
+      if (adFreeStatus) {
+        const date = await iapManager.getPurchaseDate();
+        setPurchaseDate(date);
+        await adManager.setAdFreePurchased(true);
+      }
 
       // Refresh app lock settings
       await refreshSettings();
@@ -241,6 +255,69 @@ export default function SettingsScreen() {
     }
   };
 
+  const handlePurchaseAdFree = async () => {
+    try {
+      const result = await iapManager.purchaseAdFree();
+      if (result.success) {
+        await loadSettings(); // Refresh settings to show updated status
+      }
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      Alert.alert('Error', 'Failed to process purchase. Please try again.');
+    }
+  };
+
+  const handleRestorePurchases = async () => {
+    try {
+      await iapManager.restorePurchases();
+      await loadSettings(); // Refresh settings
+    } catch (error) {
+      console.error('Restore failed:', error);
+      Alert.alert('Error', 'Failed to restore purchases. Please try again.');
+    }
+  };
+
+  const renderPremiumSection = () => (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Premium Features</Text>
+
+      {/* Ad-Free Status */}
+      <View style={styles.settingItem}>
+        <View style={styles.settingContent}>
+          <Text style={styles.settingTitle}>
+            {isAdFree ? 'Premium Active' : 'Remove Ads'}
+          </Text>
+          <Text style={styles.settingDescription}>
+            {isAdFree
+              ? `Ad-free since ${purchaseDate?.toLocaleDateString() || 'Unknown date'}`
+              : 'Remove all advertisements and support development'}
+          </Text>
+        </View>
+        {!isAdFree && (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handlePurchaseAdFree}
+          >
+            <Text style={styles.buttonText}>{iapManager.getPrice()}</Text>
+          </TouchableOpacity>
+        )}
+        {isAdFree && <Text style={styles.settingValue}>✓ Premium</Text>}
+      </View>
+
+      {/* Restore Purchases */}
+      {!isAdFree && (
+        <TouchableOpacity
+          style={[styles.settingItem, { justifyContent: 'center' }]}
+          onPress={handleRestorePurchases}
+        >
+          <Text style={[styles.settingTitle, { color: Colors.primary }]}>
+            Restore Purchases
+          </Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
   const renderSecuritySection = () => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Security</Text>
@@ -403,6 +480,7 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.title}>Settings</Text>
+        {renderPremiumSection()}
         {renderSecuritySection()}
       </ScrollView>
 

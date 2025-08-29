@@ -118,7 +118,10 @@ const ensureCharacterTypes = async (
   }
 
   // Ensure at least one number
-  if (options.includeNumbers && !CHARACTER_TEST_PATTERNS.numbers.test(password)) {
+  if (
+    options.includeNumbers &&
+    !CHARACTER_TEST_PATTERNS.numbers.test(password)
+  ) {
     const numberSet = options.excludeSimilar
       ? NUMBERS.replace(SIMILAR_CHAR_PATTERNS.numbers, '')
       : NUMBERS;
@@ -128,7 +131,10 @@ const ensureCharacterTypes = async (
   }
 
   // Ensure at least one symbol
-  if (options.includeSymbols && !CHARACTER_TEST_PATTERNS.symbols.test(password)) {
+  if (
+    options.includeSymbols &&
+    !CHARACTER_TEST_PATTERNS.symbols.test(password)
+  ) {
     const symbolSet = options.excludeSimilar
       ? SYMBOLS.replace(SIMILAR_CHAR_PATTERNS.symbols, '')
       : SYMBOLS;

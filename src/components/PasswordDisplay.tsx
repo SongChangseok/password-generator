@@ -11,6 +11,7 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Colors } from '../utils/colors';
 import { getPasswordDisplayText } from '../utils/passwordFormatter';
+import { trackPasswordCopied } from '../utils/analytics';
 
 interface PasswordDisplayProps {
   password: string;
@@ -40,6 +41,9 @@ export const PasswordDisplay: React.FC<PasswordDisplayProps> = ({
 
       // Show success message
       Alert.alert('Copied!', 'Password copied to clipboard', [{ text: 'OK' }]);
+
+      // Track analytics
+      trackPasswordCopied();
 
       // Call optional callback
       onCopy?.();
