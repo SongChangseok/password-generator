@@ -158,7 +158,15 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
       good: 'Good',
       strong: 'Strong',
     };
-    return labels[label] || label;
+    // Safe property access to prevent object injection
+    switch (label) {
+      case 'very-weak': return labels['very-weak'];
+      case 'weak': return labels['weak'];
+      case 'fair': return labels['fair'];
+      case 'good': return labels['good'];
+      case 'strong': return labels['strong'];
+      default: return label;
+    }
   };
 
   return (

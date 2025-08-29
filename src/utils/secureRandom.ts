@@ -18,7 +18,7 @@ export const getSecureRandomBytes = async (
       // Fallback to Math.random for test environment
       const fallbackBytes = new Uint8Array(length);
       for (let i = 0; i < length; i++) {
-        fallbackBytes[i] = Math.floor(Math.random() * 256);
+        fallbackBytes.set([Math.floor(Math.random() * 256)], i);
       }
       return fallbackBytes;
     }
@@ -28,7 +28,7 @@ export const getSecureRandomBytes = async (
     // Fallback to Math.random if crypto is not available
     const fallbackBytes = new Uint8Array(length);
     for (let i = 0; i < length; i++) {
-      fallbackBytes[i] = Math.floor(Math.random() * 256);
+      fallbackBytes.set([Math.floor(Math.random() * 256)], i);
     }
     return fallbackBytes;
   }
@@ -57,7 +57,7 @@ export const getSecureRandomInt = async (
     const randomBytes = await getSecureRandomBytes(bytesNeeded);
     randomValue = 0;
     for (let i = 0; i < bytesNeeded; i++) {
-      randomValue = randomValue * 256 + randomBytes[i];
+      randomValue = randomValue * 256 + (randomBytes.at(i) || 0);
     }
   } while (randomValue > maxValidValue);
 
@@ -74,7 +74,11 @@ export const secureShuffleArray = async <T>(array: T[]): Promise<T[]> => {
 
   for (let i = result.length - 1; i > 0; i--) {
     const j = await getSecureRandomInt(0, i);
-    [result[i], result[j]] = [result[j], result[i]];
+    const temp = result.at(i);
+    if (temp !== undefined && result.at(j) !== undefined) {
+      result[i] = result.at(j)!;
+      result[j] = temp;
+    }
   }
 
   return result;

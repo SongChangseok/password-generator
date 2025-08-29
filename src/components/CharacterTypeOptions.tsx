@@ -62,20 +62,67 @@ export const CharacterTypeOptions: React.FC<CharacterTypeOptionsProps> = ({
   style,
 }) => {
   const toggleOption = (key: keyof GeneratorOptions) => {
-    // Type-safe property access to prevent object injection
-    const currentValue = options[key];
-    if (typeof currentValue === 'boolean') {
-      onOptionsChange({
-        ...options,
-        [key]: !currentValue,
-      });
+    // Safe property access to prevent object injection
+    const toggleMap: Record<string, boolean> = {
+      'includeUppercase': options.includeUppercase,
+      'includeLowercase': options.includeLowercase,
+      'includeNumbers': options.includeNumbers,
+      'includeSymbols': options.includeSymbols,
+      'excludeSimilar': options.excludeSimilar,
+      'preventRepeating': options.preventRepeating,
+      'readableFormat': options.readableFormat
+    };
+    
+    const keyStr = String(key);
+    if (keyStr in toggleMap) {
+      const newOptions: GeneratorOptions = { ...options };
+      switch (keyStr) {
+        case 'includeUppercase':
+          newOptions.includeUppercase = !options.includeUppercase;
+          break;
+        case 'includeLowercase':
+          newOptions.includeLowercase = !options.includeLowercase;
+          break;
+        case 'includeNumbers':
+          newOptions.includeNumbers = !options.includeNumbers;
+          break;
+        case 'includeSymbols':
+          newOptions.includeSymbols = !options.includeSymbols;
+          break;
+        case 'excludeSimilar':
+          newOptions.excludeSimilar = !options.excludeSimilar;
+          break;
+        case 'preventRepeating':
+          newOptions.preventRepeating = !options.preventRepeating;
+          break;
+        case 'readableFormat':
+          newOptions.readableFormat = !options.readableFormat;
+          break;
+        default:
+          console.warn(`Attempted to toggle unknown property: ${keyStr}`);
+          return;
+      }
+      onOptionsChange(newOptions);
     } else {
-      console.warn(`Attempted to toggle non-boolean property: ${String(key)}`);
+      console.warn(`Attempted to toggle non-boolean property: ${keyStr}`);
     }
   };
 
   const renderOptionItem = (item: OptionItem) => {
-    const isEnabled = Boolean(options[item.key]);
+    // Safe property access to prevent object injection
+    const getValue = (key: keyof GeneratorOptions): boolean => {
+      switch (key) {
+        case 'includeUppercase': return options.includeUppercase;
+        case 'includeLowercase': return options.includeLowercase;
+        case 'includeNumbers': return options.includeNumbers;
+        case 'includeSymbols': return options.includeSymbols;
+        case 'excludeSimilar': return options.excludeSimilar;
+        case 'preventRepeating': return options.preventRepeating;
+        case 'readableFormat': return options.readableFormat;
+        default: return false;
+      }
+    };
+    const isEnabled = getValue(item.key);
 
     return (
       <TouchableOpacity

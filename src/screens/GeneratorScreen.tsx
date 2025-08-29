@@ -5,6 +5,8 @@ import {
   SafeAreaView,
   Alert,
   View,
+  TouchableOpacity,
+  Text,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import {
@@ -20,13 +22,16 @@ import { CharacterTypeOptions } from '../components/CharacterTypeOptions';
 import { GenerateButton } from '../components/GenerateButton';
 import { TemplateSelector } from '../components/TemplateSelector';
 import { BannerAdComponent } from '../components/BannerAdComponent';
+import { SavePasswordDialog } from '../components/SavePasswordDialog';
 import { trackPasswordGenerated } from '../utils/analytics';
+import { SavePasswordOptions } from '../utils/types';
 
 export default function GeneratorScreen() {
   const [options, setOptions] = useState<GeneratorOptions>(DEFAULT_OPTIONS);
   const [generatedPassword, setGeneratedPassword] =
     useState<GeneratedPassword | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const handleGeneratePassword = useCallback(async () => {
     try {
@@ -82,6 +87,16 @@ export default function GeneratorScreen() {
   const handleCopyPassword = () => {
     // Optional callback when password is copied
     console.log('Password copied to clipboard');
+  };
+
+  const handleSavePassword = () => {
+    if (!generatedPassword) return;
+    setShowSaveDialog(true);
+  };
+
+  const handleSaveComplete = () => {
+    setShowSaveDialog(false);
+    Alert.alert('Success', 'Password saved successfully!', [{ text: 'OK' }]);
   };
 
   // Generate initial password when screen is focused
@@ -141,10 +156,35 @@ export default function GeneratorScreen() {
             }
             style={styles.generateButton}
           />
+
+          {generatedPassword && (
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={handleSavePassword}
+            >
+              <Text style={styles.saveButtonText}>Save Password</Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
 
         <BannerAdComponent hideWhenGenerating={true} isGenerating={loading} />
       </View>
+
+      {/* Save Password Dialog */}
+      <SavePasswordDialog
+        visible={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
+        onSave={handleSaveComplete}
+        passwordData={
+          generatedPassword
+            ? {
+                password: generatedPassword.password,
+                strength: generatedPassword.strength,
+                options: options,
+              }
+            : (undefined as any)
+        }
+      />
     </SafeAreaView>
   );
 }
@@ -170,5 +210,19 @@ const styles = StyleSheet.create({
   generateButton: {
     marginTop: 24,
     marginBottom: 16,
+  },
+  saveButton: {
+    backgroundColor: Colors.success,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 16,
+  },
+  saveButtonText: {
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

@@ -190,12 +190,32 @@ export const highlightSearchMatches = (
   const searchQuery = caseSensitive ? query.trim() : query.trim().toLowerCase();
   const searchText = caseSensitive ? text : text.toLowerCase();
 
-  // Simple highlighting - in a real app you might want to use a more sophisticated approach
-  const regex = new RegExp(
-    `(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`,
-    caseSensitive ? 'g' : 'gi'
-  );
-  return text.replace(regex, '**$1**');
+  // Simple highlighting with escaped query to prevent injection
+  const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  
+  // Use string splitting for safer highlighting instead of regex
+  if (caseSensitive) {
+    return text.split(searchQuery).join(`**${searchQuery}**`);
+  } else {
+    const parts = text.toLowerCase().split(searchQuery);
+    let result = '';
+    let searchIndex = 0;
+    
+    for (let i = 0; i < parts.length; i++) {
+      if (i > 0) {
+        const originalMatch = text.substring(
+          searchIndex + parts[i - 1].length,
+          searchIndex + parts[i - 1].length + searchQuery.length
+        );
+        result += `**${originalMatch}**`;
+        searchIndex += parts[i - 1].length + searchQuery.length;
+      } else {
+        searchIndex += parts[i].length;
+      }
+      result += text.substring(searchIndex - parts[i].length, searchIndex);
+    }
+    return result;
+  }
 };
 
 /**

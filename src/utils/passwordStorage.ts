@@ -267,14 +267,18 @@ export const passwordStorage: PasswordStorage = {
       usageCount: updates.usageCount,
     };
 
-    passwords[index] = {
-      ...passwords[index],
-      ...Object.fromEntries(
-        Object.entries(allowedUpdates).filter(
-          ([_, value]) => value !== undefined
-        )
-      ),
-    };
+    // Safe update without object injection
+    const existingPassword = passwords.at(index);
+    if (!existingPassword) return;
+    
+    const updatedPassword: SavedPassword = { ...existingPassword };
+    if (allowedUpdates.siteName !== undefined) updatedPassword.siteName = allowedUpdates.siteName;
+    if (allowedUpdates.accountName !== undefined) updatedPassword.accountName = allowedUpdates.accountName;
+    if (allowedUpdates.memo !== undefined) updatedPassword.memo = allowedUpdates.memo;
+    if (allowedUpdates.lastUsed !== undefined) updatedPassword.lastUsed = allowedUpdates.lastUsed;
+    if (allowedUpdates.usageCount !== undefined) updatedPassword.usageCount = allowedUpdates.usageCount;
+    
+    passwords[index] = updatedPassword;
 
     await saveAllPasswords(passwords);
   },

@@ -112,7 +112,8 @@ const hasKeyboardPatterns = (password: string): boolean => {
 const hasRepetition = (password: string): boolean => {
   // Check for 3+ repeated characters
   for (let i = 0; i < password.length - 2; i++) {
-    if (password[i] === password[i + 1] && password[i] === password[i + 2]) {
+    const char = password.charAt(i);
+    if (char === password.charAt(i + 1) && char === password.charAt(i + 2)) {
       return true;
     }
   }

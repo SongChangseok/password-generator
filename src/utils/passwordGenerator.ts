@@ -153,7 +153,7 @@ const ensureCharacterTypes = async (
  */
 const hasRepeatingChars = (password: string): boolean => {
   for (let i = 0; i < password.length - 1; i++) {
-    if (password[i] === password[i + 1]) {
+    if (password.charAt(i) === password.charAt(i + 1)) {
       return true;
     }
   }
@@ -208,7 +208,7 @@ export const generateSecurePassword = async (
     const chars: string[] = [];
     for (let i = 0; i < options.length; i++) {
       const randomIndex = await getSecureRandomInt(0, charset.length - 1);
-      chars.push(charset[randomIndex]);
+      chars.push(charset.charAt(randomIndex));
     }
 
     password = chars.join('');
