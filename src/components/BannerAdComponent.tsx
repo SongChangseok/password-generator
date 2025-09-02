@@ -5,11 +5,18 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import {
-  BannerAd,
-  BannerAdSize,
-  AdEventType,
-} from 'react-native-google-mobile-ads';
+// Mock Google Mobile Ads components
+const BannerAd = () => null;
+
+const BannerAdSize = {
+  ANCHORED_ADAPTIVE_BANNER: 'adaptive',
+  BANNER: 'banner'
+};
+
+const AdEventType = {
+  LOADED: 'loaded',
+  CLICKED: 'clicked'
+};
 import { adManager } from '@/utils/adManager';
 import { Colors } from '@/utils/colors';
 import { trackBannerAdDisplayed } from '@/utils/analytics';
@@ -26,7 +33,6 @@ export const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
   isGenerating = false,
 }) => {
   const [shouldShow, setShouldShow] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     setShouldShow(adManager.shouldShowBannerAd());
@@ -39,23 +45,8 @@ export const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
 
   return (
     <View style={[styles.container, style]}>
-      <BannerAd
-        unitId={adManager.getBannerAdUnitId()}
-        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-        requestOptions={{
-          requestNonPersonalizedAdsOnly: true,
-          keywords: ['security', 'password', 'privacy', 'tools'],
-        }}
-        onAdLoaded={() => {
-          setIsLoaded(true);
-          trackBannerAdDisplayed();
-        }}
-        onAdFailedToLoad={(error) => {
-          console.warn('Banner ad failed to load:', error);
-          setIsLoaded(false);
-        }}
-      />
-      {!isLoaded && <View style={styles.placeholder} />}
+      <BannerAd />
+      <View style={styles.placeholder} />
     </View>
   );
 };

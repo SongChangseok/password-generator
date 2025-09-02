@@ -3,14 +3,41 @@
  * Handles banner and interstitial ads with user-friendly policies
  */
 
-import {
-  BannerAd,
-  BannerAdSize,
-  InterstitialAd,
-  AdEventType,
-  TestIds,
-  MobileAds,
-} from 'react-native-google-mobile-ads';
+// Mock Google Mobile Ads for web compatibility
+const BannerAd = () => null;
+
+const BannerAdSize = {
+  ANCHORED_ADAPTIVE_BANNER: 'adaptive',
+  BANNER: 'banner'
+};
+
+const AdEventType = {
+  LOADED: 'loaded',
+  CLICKED: 'clicked',
+  CLOSED: 'closed',
+  ERROR: 'error'
+};
+
+const TestIds = {
+  BANNER: 'ca-app-pub-3940256099942544/6300978111',
+  INTERSTITIAL: 'ca-app-pub-3940256099942544/1033173712'
+};
+
+const InterstitialAd = {
+  createForAdRequest: (adUnitId: string, requestOptions: any) => ({
+    load: () => Promise.resolve(),
+    show: () => Promise.resolve(),
+    addAdEventListener: (type: string, callback: Function) => {
+      if (type === 'loaded' || type === AdEventType.LOADED) {
+        setTimeout(callback, 100);
+      }
+    }
+  })
+};
+
+const MobileAds = () => ({
+  initialize: () => Promise.resolve()
+});
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   trackBannerAdDisplayed,
@@ -43,7 +70,7 @@ const AD_CONFIG = {
 };
 
 class AdManager {
-  private interstitialAd: InterstitialAd | null = null;
+  private interstitialAd: any = null;
   private isAdFree: boolean = false;
 
   constructor() {

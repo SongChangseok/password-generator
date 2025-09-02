@@ -33,6 +33,11 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
   onSave,
   passwordData,
 }) => {
+  // Provide safe fallback for passwordData
+  const safePasswordData = passwordData || {
+    password: '',
+    strength: { score: 0, label: 'very-weak' as const, feedback: [] }
+  };
   const [siteName, setSiteName] = useState('');
   const [accountName, setAccountName] = useState('');
   const [memo, setMemo] = useState('');
@@ -48,11 +53,11 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
     if (visible) {
       loadStorageInfo();
       // Pre-fill with any existing data
-      setSiteName(passwordData.siteName || '');
-      setAccountName(passwordData.accountName || '');
-      setMemo(passwordData.memo || '');
+      setSiteName(safePasswordData.siteName || '');
+      setAccountName(safePasswordData.accountName || '');
+      setMemo(safePasswordData.memo || '');
     }
-  }, [visible, passwordData]);
+  }, [visible, safePasswordData]);
 
   const loadStorageInfo = async () => {
     try {
@@ -97,11 +102,11 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
       const passwordId = await generatePasswordId();
       const savedPassword: SavedPassword = {
         id: passwordId,
-        password: passwordData.password,
+        password: safePasswordData.password,
         siteName: siteName.trim(),
         accountName: accountName.trim() || undefined,
         memo: memo.trim() || undefined,
-        strength: passwordData.strength,
+        strength: safePasswordData.strength,
         createdAt: new Date(),
         lastUsed: undefined,
         usageCount: 0,
@@ -169,6 +174,11 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
     }
   };
 
+  // Early return if no valid password data
+  if (!safePasswordData.password) {
+    return null;
+  }
+
   return (
     <Modal
       visible={visible}
@@ -202,21 +212,21 @@ export const SavePasswordDialog: React.FC<SavePasswordDialogProps> = ({
             <Text style={styles.sectionTitle}>Password</Text>
             <View style={styles.passwordPreview}>
               <Text style={styles.passwordText} numberOfLines={1}>
-                {passwordData.password}
+                {safePasswordData.password}
               </Text>
               <View
                 style={[
                   styles.strengthIndicator,
                   {
                     backgroundColor: getStrengthColor(
-                      passwordData.strength.score
+                      safePasswordData.strength.score
                     ),
                   },
                 ]}
               />
             </View>
             <Text style={styles.strengthLabel}>
-              Strength: {getStrengthLabel(passwordData.strength.label)}
+              Strength: {getStrengthLabel(safePasswordData.strength.label)}
             </Text>
           </View>
 

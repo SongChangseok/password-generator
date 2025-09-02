@@ -7,6 +7,7 @@ import {
   View,
   TouchableOpacity,
   Text,
+  Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import {
@@ -27,6 +28,7 @@ import { trackPasswordGenerated } from '../utils/analytics';
 import { SavePasswordOptions } from '../utils/types';
 
 export default function GeneratorScreen() {
+
   const [options, setOptions] = useState<GeneratorOptions>(DEFAULT_OPTIONS);
   const [generatedPassword, setGeneratedPassword] =
     useState<GeneratedPassword | null>(null);
@@ -180,9 +182,11 @@ export default function GeneratorScreen() {
             ? {
                 password: generatedPassword.password,
                 strength: generatedPassword.strength,
-                options: options,
               }
-            : (undefined as any)
+            : {
+                password: '',
+                strength: { score: 0, label: 'very-weak' as const, feedback: [] }
+              }
         }
       />
     </SafeAreaView>

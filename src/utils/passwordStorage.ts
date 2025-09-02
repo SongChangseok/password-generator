@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import { webSecureStorage } from './webStorage';
 import * as Crypto from 'expo-crypto';
 import {
   SavedPassword,
@@ -56,7 +56,7 @@ const decryptData = async (encryptedData: string): Promise<string> => {
  */
 const getAllPasswords = async (): Promise<SavedPassword[]> => {
   try {
-    const encryptedData = await SecureStore.getItemAsync(STORAGE_KEY);
+    const encryptedData = await webSecureStorage.getItemAsync(STORAGE_KEY);
     if (!encryptedData) {
       return [];
     }
@@ -83,7 +83,7 @@ const saveAllPasswords = async (passwords: SavedPassword[]): Promise<void> => {
   try {
     const dataToStore = JSON.stringify(passwords);
     const encryptedData = await encryptData(dataToStore);
-    await SecureStore.setItemAsync(STORAGE_KEY, encryptedData);
+    await webSecureStorage.setItemAsync(STORAGE_KEY, encryptedData);
   } catch (error) {
     console.error('Error saving passwords:', error);
     throw new Error('Failed to save passwords');
@@ -167,11 +167,11 @@ const searchPasswords = (
  */
 const checkAndMigrateStorage = async (): Promise<void> => {
   try {
-    const currentVersion = await SecureStore.getItemAsync(STORAGE_VERSION_KEY);
+    const currentVersion = await webSecureStorage.getItemAsync(STORAGE_VERSION_KEY);
 
     if (currentVersion !== CURRENT_STORAGE_VERSION) {
       // Future: Add migration logic here when storage format changes
-      await SecureStore.setItemAsync(
+      await webSecureStorage.setItemAsync(
         STORAGE_VERSION_KEY,
         CURRENT_STORAGE_VERSION
       );
@@ -301,7 +301,7 @@ export const passwordStorage: PasswordStorage = {
    * Delete all saved passwords
    */
   deleteAll: async (): Promise<void> => {
-    await SecureStore.deleteItemAsync(STORAGE_KEY);
+    await webSecureStorage.deleteItemAsync(STORAGE_KEY);
   },
 
   /**
